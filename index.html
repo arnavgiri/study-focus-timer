@@ -3,17 +3,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#101827">
-  <meta name="description" content="A calming, fullscreen study timer with beautiful odometer animations and customizable themes.">
-  <link rel="icon" type="image/webp" href="./favicon.webp?v=3">
+  <meta name="description" content="A beautiful, distraction-free study timer with smooth mechanical odometer animations and calming themes.">
+  <link rel="icon" type="image/webp" href="./favicon.webp?v=4">
   <title>Study Focus Timer | BiharKalyan.in</title>
 
   <style>
     :root {
       color-scheme: dark;
+
       --bg: #101827;
-      --bg-end: #182439;
+      --bg-end: #172338;
       --fg: #f1f5f9;
       --muted: #a5b4c8;
       --accent: #8be6bb;
@@ -22,10 +23,12 @@
       --tile-text: #f1f5f9;
       --border: rgba(255,255,255,.11);
       --shadow: rgba(0,0,0,.24);
-      --roll-duration: 550ms;
+
+      --roll-duration: 600ms;
+      --roll-easing: cubic-bezier(.22,1,.36,1);
     }
 
-    /* 10 Calm Color Themes */
+    /* Theme 1: Minimal Dark */
     body[data-theme="dark"] {
       --bg: #101827;
       --bg-end: #172338;
@@ -39,6 +42,7 @@
       --shadow: rgba(0,0,0,.24);
     }
 
+    /* Theme 2: Clean Paper */
     body[data-theme="paper"] {
       color-scheme: light;
       --bg: #f6f0e9;
@@ -53,6 +57,7 @@
       --shadow: rgba(73,56,39,.13);
     }
 
+    /* Theme 3: Focused Green */
     body[data-theme="green"] {
       --bg: #071c1b;
       --bg-end: #0e3430;
@@ -66,6 +71,7 @@
       --shadow: rgba(0,0,0,.22);
     }
 
+    /* Theme 4: Night Study */
     body[data-theme="night"] {
       --bg: #141631;
       --bg-end: #333566;
@@ -79,6 +85,7 @@
       --shadow: rgba(0,0,0,.23);
     }
 
+    /* Theme 5: Calm Daylight */
     body[data-theme="daylight"] {
       color-scheme: light;
       --bg: #d4e8f8;
@@ -93,6 +100,7 @@
       --shadow: rgba(42,93,134,.13);
     }
 
+    /* Theme 6: Warm Focus */
     body[data-theme="warm"] {
       --bg: #191725;
       --bg-end: #342a3c;
@@ -106,6 +114,7 @@
       --shadow: rgba(0,0,0,.22);
     }
 
+    /* Theme 7: Ring + Flip */
     body[data-theme="ring"] {
       --bg: #0b1c30;
       --bg-end: #153451;
@@ -119,6 +128,7 @@
       --shadow: rgba(0,0,0,.24);
     }
 
+    /* Theme 8: Glass Flip */
     body[data-theme="glass"] {
       color-scheme: light;
       --bg: #e9e6fa;
@@ -133,6 +143,7 @@
       --shadow: rgba(61,71,139,.14);
     }
 
+    /* Theme 9: Study Minimal */
     body[data-theme="study"] {
       --bg: #101f29;
       --bg-end: #1b303e;
@@ -146,6 +157,7 @@
       --shadow: rgba(0,0,0,.23);
     }
 
+    /* Theme 10: Serene Sunset */
     body[data-theme="sunset"] {
       --bg: #34304b;
       --bg-end: #86677f;
@@ -165,9 +177,9 @@
 
     html,
     body {
-      margin: 0;
       width: 100%;
       height: 100%;
+      margin: 0;
     }
 
     body {
@@ -176,11 +188,13 @@
         var(--bg),
         var(--bg-end)
       );
-      background-attachment: fixed;
+
       color: var(--fg);
-      font-family: Inter, system-ui, -apple-system, Arial, sans-serif;
+      font-family: Inter, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+
       overflow: hidden;
-      transition: background .4s, color .4s;
+      transition: color .4s, background .4s;
     }
 
     button,
@@ -201,23 +215,32 @@
     /* Navigation */
     .topbar {
       position: fixed;
-      inset: 0 0 auto;
+      top: 0;
+      left: 0;
+      right: 0;
       z-index: 20;
-      padding: 20px 24px;
+
       display: flex;
+      align-items: center;
       justify-content: space-between;
+
+      padding: 20px 24px;
       pointer-events: none;
     }
 
     .icon-button {
       width: 48px;
       height: 48px;
+
       display: grid;
       place-items: center;
+
+      color: var(--fg);
+      background: var(--panel);
+
       border: 1px solid var(--border);
       border-radius: 14px;
-      background: var(--panel);
-      color: var(--fg);
+
       opacity: .6;
       transition: opacity .2s, background .2s;
       pointer-events: auto;
@@ -231,6 +254,7 @@
     .icon-button svg {
       width: 23px;
       height: 23px;
+
       fill: none;
       stroke: currentColor;
       stroke-width: 1.8;
@@ -238,11 +262,12 @@
       stroke-linejoin: round;
     }
 
-    /* Timer */
+    /* Fullscreen timer layout */
     .timer-screen {
       width: 100%;
-      min-height: 100vh;
-      min-height: 100dvh;
+      height: 100vh;
+      height: 100dvh;
+
       display: grid;
       place-items: center;
       padding: 24px;
@@ -253,19 +278,20 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      isolation: isolate;
       max-width: 100%;
+      isolation: isolate;
     }
 
     .timer-shell::before {
       content: "";
       position: absolute;
-      inset: -50px;
+      inset: -45px;
+
       border: 2px solid transparent;
       border-radius: 50%;
+
       pointer-events: none;
       z-index: -1;
-      transition: border-color .4s;
     }
 
     body[data-theme="ring"] .timer-shell::before {
@@ -279,119 +305,153 @@
       display: flex;
       align-items: center;
       justify-content: center;
+
       gap: .018em;
-      font-size: clamp(50px, 17vw, 290px);
+      margin: 0;
+
+      font-size: clamp(48px, 17vw, 290px);
       font-weight: 650;
       font-variant-numeric: tabular-nums;
+
       letter-spacing: -.045em;
       line-height: 1;
       white-space: nowrap;
       user-select: none;
     }
 
-    /* Individual odometer reels */
+    /*
+      TRUE MECHANICAL ODOMETER
+
+      New digit starts above.
+      Old digit is visible.
+      Both digits move downward together.
+    */
+
     .digit-reel {
       position: relative;
       display: inline-block;
-      flex: 0 0 .66em;
+
       width: .66em;
       height: 1.1em;
+      flex: 0 0 .66em;
+
       overflow: hidden;
+
       background: var(--tile);
+      color: var(--tile-text);
+
       border: 1px solid var(--border);
       border-radius: .075em;
+
       box-shadow:
         0 .04em .1em var(--shadow),
         inset 0 .025em .06em rgba(255,255,255,.05);
-      color: var(--tile-text);
-      vertical-align: middle;
+
+      isolation: isolate;
       transform: translateZ(0);
     }
 
-    .digit-reel::after {
-      content: "";
+    /* Two stacked faces move as a single piece */
+    .reel-track {
       position: absolute;
+      top: 0;
       left: 0;
-      right: 0;
-      top: 50%;
-      height: 1px;
-      background: rgba(0,0,0,.18);
-      pointer-events: none;
-      z-index: 3;
-    }
 
-    .reel-number {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      font-weight: inherit;
-      line-height: 1;
+      width: 100%;
+      height: 200%;
+
+      display: flex;
+      flex-direction: column;
+
+      transform: translateY(-50%);
       will-change: transform;
       backface-visibility: hidden;
     }
 
-    .reel-number.current {
-      transform: translateY(0);
+    .reel-face {
+      flex: 0 0 50%;
+      width: 100%;
+      height: 50%;
+
+      display: grid;
+      place-items: center;
+
+      font-size: 1em;
+      font-weight: inherit;
+      line-height: 1;
     }
 
-    .reel-number.incoming {
-      transform: translateY(-100%);
+    /*
+      Initial position:
+      [ New number ] - above the window
+      [ Old number ] - inside the window
+
+      Final position:
+      [ New number ] - inside the window
+      [ Old number ] - below the window
+    */
+
+    .digit-reel.rolling .reel-track {
+      animation: mechanicalRollDown
+        var(--roll-duration)
+        var(--roll-easing)
+        forwards;
     }
 
-    /* Old number rolls down and new number comes from above */
-    .digit-reel.rolling .reel-number.current {
-      animation: rollOld var(--roll-duration)
-        cubic-bezier(.25,.8,.25,1) forwards;
-    }
-
-    .digit-reel.rolling .reel-number.incoming {
-      animation: rollNew var(--roll-duration)
-        cubic-bezier(.25,.8,.25,1) forwards;
-    }
-
-    @keyframes rollOld {
-      from {
-        transform: translateY(0);
+    @keyframes mechanicalRollDown {
+      0% {
+        transform: translateY(-50%);
       }
-      to {
-        transform: translateY(100%);
+
+      100% {
+        transform: translateY(0%);
       }
     }
 
-    @keyframes rollNew {
-      from {
-        transform: translateY(-100%);
-      }
-      to {
-        transform: translateY(0);
-      }
+    /* Mechanical split line */
+    .digit-reel::after {
+      content: "";
+      position: absolute;
+
+      top: 50%;
+      left: 0;
+      right: 0;
+
+      height: 1px;
+      background: rgba(0,0,0,.16);
+
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .timer-shell.finished .digit-reel {
+      border-color: var(--accent);
     }
 
     .separator {
       display: inline-grid;
       place-items: center;
+
       flex: 0 0 .25em;
       width: .25em;
+
       color: var(--fg);
       transform: translateY(-.045em);
     }
 
-    .timer-shell.finished .digit-reel {
-      border-color: var(--accent);
-      box-shadow: 0 0 .12em var(--shadow);
-    }
-
-    /* Normal mode controls */
+    /* Start and Reset */
     .side-controls {
       position: fixed;
       top: 50%;
       right: 17px;
+
       transform: translateY(-50%);
       z-index: 10;
+
       display: flex;
       flex-direction: column;
       gap: 12px;
+
       opacity: .6;
       transition: opacity .2s;
     }
@@ -404,21 +464,28 @@
     .control-button {
       width: 48px;
       height: 48px;
+
       display: grid;
       place-items: center;
+
       color: var(--fg);
       background: var(--panel);
+
       border: 1px solid var(--border);
       border-radius: 14px;
+
+      transition: color .2s, transform .2s;
     }
 
     .control-button:hover {
       color: var(--accent);
+      transform: scale(1.05);
     }
 
     .control-button svg {
       width: 22px;
       height: 22px;
+
       fill: none;
       stroke: currentColor;
       stroke-width: 2;
@@ -426,7 +493,7 @@
       stroke-linejoin: round;
     }
 
-    /* Fullscreen layout */
+    /* Fullscreen: Only timer and X */
     body.fullscreen-active .menu-button,
     body.fullscreen-active .side-controls,
     body.fullscreen-active .drawer,
@@ -450,32 +517,42 @@
       background: var(--panel);
     }
 
-    /* Drawer */
+    /* Settings Backdrop */
     .backdrop {
       position: fixed;
       inset: 0;
       z-index: 29;
+
       background: rgba(0,0,0,.5);
-      visibility: hidden;
       opacity: 0;
+      visibility: hidden;
+
       transition: opacity .25s, visibility .25s;
     }
 
     .backdrop.visible {
-      visibility: visible;
       opacity: 1;
+      visibility: visible;
     }
 
+    /* Hamburger Drawer */
     .drawer {
       position: fixed;
-      inset: 0 auto 0 0;
+      top: 0;
+      left: 0;
+      bottom: 0;
+
       width: min(370px, 90vw);
       z-index: 30;
+
       padding: 25px 22px;
+
       background: var(--panel);
       border-right: 1px solid var(--border);
+
       transform: translateX(-100%);
-      transition: transform .25s;
+      transition: transform .25s ease;
+
       overflow-y: auto;
       overscroll-behavior: contain;
     }
@@ -498,20 +575,22 @@
     }
 
     .close-button {
-      background: transparent;
-      color: var(--fg);
-      border: 0;
-      font-size: 28px;
       padding: 4px 9px;
+      background: transparent;
+      border: 0;
+      color: var(--fg);
+      font-size: 28px;
     }
 
     .section-title {
+      margin: 0 0 13px;
+
       font-size: 12px;
       font-weight: 700;
       letter-spacing: .1em;
+
       text-transform: uppercase;
       color: var(--muted);
-      margin: 0 0 13px;
     }
 
     .presets {
@@ -521,13 +600,15 @@
       margin-bottom: 26px;
     }
 
-    .preset,
-    .theme-option {
-      border: 1px solid var(--border);
-      background: var(--tile);
-      color: var(--tile-text);
-      border-radius: 11px;
+    .preset {
       padding: 12px 10px;
+
+      color: var(--tile-text);
+      background: var(--tile);
+
+      border: 1px solid var(--border);
+      border-radius: 11px;
+
       transition: border-color .2s;
     }
 
@@ -546,25 +627,30 @@
       min-width: 0;
       width: 100%;
       padding: 12px;
+
       border: 1px solid var(--border);
       border-radius: 10px;
+
       color: var(--fg);
       background: var(--bg);
     }
 
     .apply-button {
       padding: 0 18px;
+
       border: 0;
       border-radius: 10px;
+
       background: var(--accent);
       color: #10261d;
       font-weight: 700;
     }
 
-    /* Theme selection */
+    /* Theme Selector */
     .theme-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
+
       gap: 10px;
       margin-bottom: 28px;
     }
@@ -573,11 +659,20 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      text-align: left;
-      font-size: 12px;
+
       min-height: 49px;
+      padding: 12px 10px;
+
       background: var(--bg);
       color: var(--fg);
+
+      border: 1px solid var(--border);
+      border-radius: 11px;
+
+      text-align: left;
+      font-size: 12px;
+
+      transition: border-color .2s;
     }
 
     .theme-option.active {
@@ -586,10 +681,12 @@
     }
 
     .theme-dot {
-      display: block;
       flex: 0 0 23px;
       width: 23px;
       height: 23px;
+
+      display: block;
+
       border-radius: 7px;
       border: 1px solid rgba(255,255,255,.15);
     }
@@ -598,8 +695,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       gap: 12px;
       margin-bottom: 22px;
+
       font-size: 14px;
     }
 
@@ -610,9 +709,11 @@
     }
 
     .drawer-footer {
-      border-top: 1px solid var(--border);
-      padding-top: 20px;
       margin-top: 28px;
+      padding-top: 20px;
+
+      border-top: 1px solid var(--border);
+
       color: var(--muted);
       font-size: 13px;
       line-height: 1.7;
@@ -629,12 +730,14 @@
       height: 1px;
       padding: 0;
       margin: -1px;
+
       overflow: hidden;
       clip: rect(0,0,0,0);
       white-space: nowrap;
       border: 0;
     }
 
+    /* Responsive */
     @media (max-width: 700px) {
       .topbar {
         padding: 14px;
@@ -648,6 +751,7 @@
         top: auto;
         right: 50%;
         bottom: 22px;
+
         transform: translateX(50%);
         flex-direction: row;
       }
@@ -657,15 +761,10 @@
       }
     }
 
+    /* Accessibility */
     @media (prefers-reduced-motion: reduce) {
-      :root {
-        --roll-duration: 0ms;
-      }
-
-      *,
-      *::before,
-      *::after {
-        scroll-behavior: auto !important;
+      .digit-reel.rolling .reel-track {
+        animation: none;
       }
     }
   </style>
@@ -673,7 +772,9 @@
 
 <body data-theme="dark">
 
+  <!-- Top Navigation -->
   <header class="topbar">
+
     <button
       class="icon-button menu-button"
       id="menuButton"
@@ -692,43 +793,55 @@
       aria-label="Enter fullscreen"
       title="Enter fullscreen"
     >
-      <svg id="fullscreenIcon" viewBox="0 0 24 24"
-        aria-hidden="true">
+      <svg
+        id="fullscreenIcon"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
         <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
         <path d="M16 3h3a2 2 0 0 1 2 2v3"/>
         <path d="M21 16v3a2 2 0 0 1-2 2h-3"/>
         <path d="M8 21H5a2 2 0 0 1-2-2v-3"/>
       </svg>
     </button>
+
   </header>
 
+  <!-- Timer -->
   <main class="timer-screen">
+
     <div class="timer-shell" id="timerShell">
       <h1
-        id="timerDisplay"
         class="timer-display"
+        id="timerDisplay"
         role="timer"
         aria-label="25 minutes remaining"
       ></h1>
     </div>
 
     <span
-      id="timerStatus"
       class="sr-only"
+      id="timerStatus"
       role="status"
       aria-live="polite"
     ></span>
+
   </main>
 
+  <!-- Timer Controls -->
   <div class="side-controls">
+
     <button
       class="control-button"
       id="startButton"
       aria-label="Start timer"
       title="Start / Pause"
     >
-      <svg id="playIcon" viewBox="0 0 24 24"
-        aria-hidden="true">
+      <svg
+        id="playIcon"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
         <path d="m8 5 11 7-11 7z"/>
       </svg>
     </button>
@@ -744,8 +857,10 @@
         <path d="M3 4v7h7"/>
       </svg>
     </button>
+
   </div>
 
+  <!-- Settings Drawer -->
   <div class="backdrop" id="backdrop"></div>
 
   <aside
@@ -754,8 +869,10 @@
     aria-label="Timer settings"
     aria-hidden="true"
   >
+
     <div class="drawer-header">
       <h2>Study Focus</h2>
+
       <button
         class="close-button"
         id="closeMenu"
@@ -766,10 +883,21 @@
     <h3 class="section-title">Study Duration</h3>
 
     <div class="presets">
-      <button class="preset" data-minutes="25">25 Minutes</button>
-      <button class="preset" data-minutes="45">45 Minutes</button>
-      <button class="preset" data-minutes="60">60 Minutes</button>
-      <button class="preset" data-minutes="5">5 Min Break</button>
+      <button class="preset" data-minutes="25">
+        25 Minutes
+      </button>
+
+      <button class="preset" data-minutes="45">
+        45 Minutes
+      </button>
+
+      <button class="preset" data-minutes="60">
+        60 Minutes
+      </button>
+
+      <button class="preset" data-minutes="5">
+        5 Min Break
+      </button>
     </div>
 
     <h3 class="section-title">Custom Duration</h3>
@@ -783,61 +911,96 @@
         placeholder="Minutes"
         aria-label="Custom duration in minutes"
       >
-      <button class="apply-button" id="applyCustom">Set</button>
+
+      <button class="apply-button" id="applyCustom">
+        Set
+      </button>
     </div>
 
     <h3 class="section-title">Choose Theme</h3>
 
     <div class="theme-grid" id="themeGrid">
+
       <button class="theme-option" data-theme="dark">
-        <span class="theme-dot" style="background:#101827"></span>
+        <span
+          class="theme-dot"
+          style="background:#101827"
+        ></span>
         Minimal Dark
       </button>
 
       <button class="theme-option" data-theme="paper">
-        <span class="theme-dot" style="background:#f6f0e9"></span>
+        <span
+          class="theme-dot"
+          style="background:#f6f0e9"
+        ></span>
         Clean Paper
       </button>
 
       <button class="theme-option" data-theme="green">
-        <span class="theme-dot" style="background:#0e3430"></span>
+        <span
+          class="theme-dot"
+          style="background:#0e3430"
+        ></span>
         Focused Green
       </button>
 
       <button class="theme-option" data-theme="night">
-        <span class="theme-dot" style="background:#333566"></span>
+        <span
+          class="theme-dot"
+          style="background:#333566"
+        ></span>
         Night Study
       </button>
 
       <button class="theme-option" data-theme="daylight">
-        <span class="theme-dot" style="background:#a8cfe9"></span>
+        <span
+          class="theme-dot"
+          style="background:#a8cfe9"
+        ></span>
         Calm Daylight
       </button>
 
       <button class="theme-option" data-theme="warm">
-        <span class="theme-dot" style="background:#342a3c"></span>
+        <span
+          class="theme-dot"
+          style="background:#342a3c"
+        ></span>
         Warm Focus
       </button>
 
       <button class="theme-option" data-theme="ring">
-        <span class="theme-dot" style="background:#153451"></span>
+        <span
+          class="theme-dot"
+          style="background:#153451"
+        ></span>
         Ring + Flip
       </button>
 
       <button class="theme-option" data-theme="glass">
-        <span class="theme-dot" style="background:#bac8f6"></span>
+        <span
+          class="theme-dot"
+          style="background:#bac8f6"
+        ></span>
         Glass Flip
       </button>
 
       <button class="theme-option" data-theme="study">
-        <span class="theme-dot" style="background:#1b303e"></span>
+        <span
+          class="theme-dot"
+          style="background:#1b303e"
+        ></span>
         Study Minimal
       </button>
 
       <button class="theme-option" data-theme="sunset">
-        <span class="theme-dot" style="background:#86677f"></span>
+        <span
+          class="theme-dot"
+          style="background:#86677f"
+        ></span>
         Serene Sunset
       </button>
+
     </div>
 
     <h3 class="section-title">Preferences</h3>
@@ -851,15 +1014,19 @@
       A distraction-free timer for students.
       <br><br>
       Developed by
-      <a href="https://biharkalyan.in"
-        target="_blank" rel="noopener noreferrer">
-        BiharKalyan.in
-      </a>
+      <a
+        href="https://biharkalyan.in"
+        target="_blank"
+        rel="noopener noreferrer"
+      >BiharKalyan.in</a>
     </div>
+
   </aside>
 
   <script>
     "use strict";
+
+    /* Persistent settings */
 
     const STORAGE_KEY = "biharkalyan.studyFocus.v1";
 
@@ -884,45 +1051,57 @@
 
     const timerDisplay =
       document.getElementById("timerDisplay");
+
     const timerShell =
       document.getElementById("timerShell");
+
     const timerStatus =
       document.getElementById("timerStatus");
 
     const startButton =
       document.getElementById("startButton");
+
     const resetButton =
       document.getElementById("resetButton");
+
     const playIcon =
       document.getElementById("playIcon");
 
     const menuButton =
       document.getElementById("menuButton");
+
     const closeMenuButton =
       document.getElementById("closeMenu");
+
     const drawer =
       document.getElementById("drawer");
+
     const backdrop =
       document.getElementById("backdrop");
 
     const fullscreenButton =
       document.getElementById("fullscreenButton");
+
     const fullscreenIcon =
       document.getElementById("fullscreenIcon");
 
     const customMinutes =
       document.getElementById("customMinutes");
+
     const applyCustom =
       document.getElementById("applyCustom");
+
     const alarmToggle =
       document.getElementById("alarmToggle");
 
     const presets =
       document.querySelectorAll(".preset");
+
     const themeButtons =
       document.querySelectorAll(".theme-option");
 
     let settings = loadSettings();
+
     let selectedSeconds = settings.duration * 60;
     let remainingSeconds = selectedSeconds;
 
@@ -934,8 +1113,11 @@
     let previousTime = "";
     let reelElements = [];
 
-    const playSVG = '<path d="m8 5 11 7-11 7z"/>';
-    const pauseSVG = '<path d="M8 5v14M16 5v14"/>';
+    const playSVG =
+      '<path d="m8 5 11 7-11 7z"/>';
+
+    const pauseSVG =
+      '<path d="M8 5v14M16 5v14"/>';
 
     const expandSVG = `
       <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
@@ -944,9 +1126,8 @@
       <path d="M8 21H5a2 2 0 0 1-2-2v-3"/>
     `;
 
-    const exitSVG = `
-      <path d="M5 5l14 14M19 5L5 19"/>
-    `;
+    const exitSVG =
+      '<path d="M5 5l14 14M19 5L5 19"/>';
 
     function loadSettings() {
       try {
@@ -984,7 +1165,7 @@
           JSON.stringify(settings)
         );
       } catch {
-        // The timer remains usable when storage is blocked.
+        // Continue if localStorage is unavailable.
       }
     }
 
@@ -992,22 +1173,47 @@
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
 
-      return String(minutes).padStart(2, "0") +
+      return (
+        String(minutes).padStart(2, "0") +
         ":" +
-        String(seconds).padStart(2, "0");
+        String(seconds).padStart(2, "0")
+      );
     }
 
-    // Create one physical-looking reel for each digit.
+    /*
+      ODOMETER ENGINE
+
+      Each digit has one moving track with two faces.
+
+      Before movement:
+      incoming digit is above the window;
+      outgoing digit is visible.
+
+      After movement:
+      incoming digit is visible;
+      outgoing digit is below the window.
+    */
+
+    function makeFace(value) {
+      const face = document.createElement("span");
+      face.className = "reel-face";
+      face.textContent = value;
+      return face;
+    }
+
     function createReel(digit) {
       const reel = document.createElement("span");
       reel.className = "digit-reel";
       reel.dataset.value = digit;
 
-      const current = document.createElement("span");
-      current.className = "reel-number current";
-      current.textContent = digit;
+      const track = document.createElement("span");
+      track.className = "reel-track";
 
-      reel.appendChild(current);
+      // The second face is visible in the resting position.
+      track.appendChild(makeFace(digit));
+      track.appendChild(makeFace(digit));
+
+      reel.appendChild(track);
 
       return reel;
     }
@@ -1022,6 +1228,7 @@
           separator.className = "separator";
           separator.textContent = ":";
           separator.setAttribute("aria-hidden", "true");
+
           timerDisplay.appendChild(separator);
         } else {
           const reel = createReel(char);
@@ -1033,38 +1240,42 @@
       previousTime = time;
     }
 
-    // Complete an animation safely before starting another.
     function finalizeReel(reel) {
-      const current = reel.querySelector(".current");
-      const incoming = reel.querySelector(".incoming");
+      const track = reel.querySelector(".reel-track");
+      if (!track) return;
 
-      if (!incoming) {
-        reel.classList.remove("rolling");
-        return;
-      }
-
-      if (current) current.remove();
-
-      incoming.classList.remove("incoming");
-      incoming.classList.add("current");
-
-      incoming.style.animation = "none";
-      incoming.style.transform = "translateY(0)";
+      track.onanimationend = null;
 
       reel.classList.remove("rolling");
+
+      // Remove the active animation before resetting the track.
+      track.style.animation = "none";
+      track.style.transform = "translateY(-50%)";
+
+      const value = reel.dataset.value;
+
+      track.replaceChildren(
+        makeFace(value),
+        makeFace(value)
+      );
     }
 
     function rollDigit(reel, nextDigit) {
       if (reel.dataset.value === nextDigit) return;
 
+      // Cancel any unfinished movement.
+      const oldDigit = reel.dataset.value;
       finalizeReel(reel);
 
-      const incoming = document.createElement("span");
-      incoming.className = "reel-number incoming";
-      incoming.textContent = nextDigit;
+      const track = reel.querySelector(".reel-track");
+
+      // New digit above, old digit below.
+      track.replaceChildren(
+        makeFace(nextDigit),
+        makeFace(oldDigit)
+      );
 
       reel.dataset.value = nextDigit;
-      reel.appendChild(incoming);
 
       if (window.matchMedia(
         "(prefers-reduced-motion: reduce)"
@@ -1073,19 +1284,18 @@
         return;
       }
 
-      // Start the downward odometer movement.
-      void reel.offsetWidth;
-      reel.classList.add("rolling");
+      // Restore CSS-driven animation.
+      track.style.animation = "";
 
-      incoming.addEventListener(
-        "animationend",
-        () => {
-          if (incoming.isConnected) {
-            finalizeReel(reel);
-          }
-        },
-        { once: true }
-      );
+      void track.offsetWidth;
+
+      track.onanimationend = event => {
+        if (event.target === track) {
+          finalizeReel(reel);
+        }
+      };
+
+      reel.classList.add("rolling");
     }
 
     function updateDisplay(animate = true) {
@@ -1110,14 +1320,15 @@
         time + " remaining"
       );
 
-      document.title =
-        time + " | Study Focus Timer";
+      document.title = time + " | Study Focus Timer";
     }
 
     function updateControls() {
       playIcon.innerHTML = running ? pauseSVG : playSVG;
 
-      const label = running ? "Pause timer" : "Start timer";
+      const label = running
+        ? "Pause timer"
+        : "Start timer";
 
       startButton.setAttribute("aria-label", label);
       startButton.title = label;
@@ -1132,6 +1343,8 @@
       running = false;
       updateControls();
     }
+
+    /* Alarm */
 
     function prepareAudio() {
       if (!settings.alarm) return;
@@ -1173,11 +1386,15 @@
           const start = now + i * .48;
 
           gain.gain.setValueAtTime(0, start);
+
           gain.gain.linearRampToValueAtTime(
-            .18, start + .04
+            .18,
+            start + .04
           );
+
           gain.gain.exponentialRampToValueAtTime(
-            .001, start + .34
+            .001,
+            start + .34
           );
 
           oscillator.start(start);
@@ -1188,6 +1405,8 @@
       }
     }
 
+    /* Timer Logic */
+
     function finishTimer() {
       clearTimer();
 
@@ -1195,7 +1414,9 @@
       updateDisplay(true);
 
       timerShell.classList.add("finished");
-      timerStatus.textContent = "Study session completed.";
+
+      timerStatus.textContent =
+        "Study session completed.";
 
       playAlarm();
     }
@@ -1226,7 +1447,9 @@
       prepareAudio();
 
       timerShell.classList.remove("finished");
-      timerStatus.textContent = "Study session started.";
+
+      timerStatus.textContent =
+        "Study session started.";
 
       endTime = Date.now() + remainingSeconds * 1000;
       running = true;
@@ -1241,8 +1464,13 @@
       if (!running) return;
 
       tick();
+
+      if (!running) return;
+
       clearTimer();
-      timerStatus.textContent = "Study session paused.";
+
+      timerStatus.textContent =
+        "Study session paused.";
     }
 
     function resetTimer() {
@@ -1252,8 +1480,11 @@
       timerShell.classList.remove("finished");
 
       updateDisplay(false);
+
       timerStatus.textContent = "Timer reset.";
     }
+
+    /* Presets */
 
     function updatePresets() {
       presets.forEach(button => {
@@ -1279,10 +1510,13 @@
       selectedSeconds = minutes * 60;
 
       saveSettings();
+
       resetTimer();
       updatePresets();
       closeSettings();
     }
+
+    /* Themes */
 
     function setTheme(theme) {
       if (!allowedThemes.has(theme)) return;
@@ -1294,6 +1528,7 @@
         const selected = button.dataset.theme === theme;
 
         button.classList.toggle("active", selected);
+
         button.setAttribute(
           "aria-pressed",
           String(selected)
@@ -1302,6 +1537,8 @@
 
       saveSettings();
     }
+
+    /* Menu */
 
     function openSettings() {
       if (document.fullscreenElement) return;
@@ -1327,6 +1564,8 @@
       menuButton.setAttribute("aria-expanded", "false");
     }
 
+    /* Fullscreen */
+
     function updateFullscreenUI() {
       const fullscreen = Boolean(document.fullscreenElement);
 
@@ -1350,7 +1589,8 @@
       }
     }
 
-    // Events
+    /* Event Listeners */
+
     startButton.addEventListener("click", () => {
       running ? pauseTimer() : startTimer();
     });
@@ -1384,6 +1624,7 @@
         customMinutes.setCustomValidity(
           "Enter a whole number between 1 and 999."
         );
+
         customMinutes.reportValidity();
         return;
       }
@@ -1415,6 +1656,7 @@
           }
 
           closeSettings();
+
           await document.documentElement.requestFullscreen();
         } else {
           await document.exitFullscreen();
@@ -1441,7 +1683,8 @@
       }
     });
 
-    // Initialize
+    /* Initialize */
+
     alarmToggle.checked = settings.alarm;
 
     setTheme(settings.theme);
@@ -1450,6 +1693,8 @@
     updateDisplay(false);
     updateControls();
     updateFullscreenUI();
+
   </script>
+
 </body>
 </html>
