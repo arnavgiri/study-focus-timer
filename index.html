@@ -3,41 +3,188 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080b12">
-  <meta name="description" content="A distraction-free fullscreen study timer for students.">
-  <link rel="icon" type="image/webp" href="./favicon.webp?v=2">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="A calming, fullscreen study timer with beautiful odometer animations and customizable themes.">
+  <link rel="icon" type="image/webp" href="./favicon.webp?v=3">
   <title>Study Focus Timer | BiharKalyan.in</title>
 
   <style>
     :root {
       color-scheme: dark;
-      --bg: #080b12;
-      --panel: #111827;
-      --text: #f8fafc;
-      --muted: #94a3b8;
+      --bg: #101827;
+      --bg-end: #182439;
+      --fg: #f1f5f9;
+      --muted: #a5b4c8;
       --accent: #8be6bb;
+      --panel: #192638;
+      --tile: #1c2a3e;
+      --tile-text: #f1f5f9;
       --border: rgba(255,255,255,.11);
+      --shadow: rgba(0,0,0,.24);
+      --roll-duration: 550ms;
+    }
+
+    /* 10 Calm Color Themes */
+    body[data-theme="dark"] {
+      --bg: #101827;
+      --bg-end: #172338;
+      --fg: #f1f5f9;
+      --muted: #a5b4c8;
+      --accent: #8be6bb;
+      --panel: #192638;
+      --tile: #1c2a3e;
+      --tile-text: #f1f5f9;
+      --border: rgba(255,255,255,.11);
+      --shadow: rgba(0,0,0,.24);
+    }
+
+    body[data-theme="paper"] {
+      color-scheme: light;
+      --bg: #f6f0e9;
+      --bg-end: #eae1d6;
+      --fg: #233247;
+      --muted: #756f6a;
+      --accent: #659f8d;
+      --panel: #fffaf4;
+      --tile: #fffdf9;
+      --tile-text: #243247;
+      --border: rgba(43,50,60,.12);
+      --shadow: rgba(73,56,39,.13);
+    }
+
+    body[data-theme="green"] {
+      --bg: #071c1b;
+      --bg-end: #0e3430;
+      --fg: #ddf8e9;
+      --muted: #92bdb3;
+      --accent: #77dfb7;
+      --panel: #102c29;
+      --tile: #143c37;
+      --tile-text: #e1fcef;
+      --border: rgba(132,230,188,.16);
+      --shadow: rgba(0,0,0,.22);
+    }
+
+    body[data-theme="night"] {
+      --bg: #141631;
+      --bg-end: #333566;
+      --fg: #f0efff;
+      --muted: #aaa8d9;
+      --accent: #bbb2ff;
+      --panel: #22244b;
+      --tile: #292c58;
+      --tile-text: #f1eeff;
+      --border: rgba(211,200,255,.13);
+      --shadow: rgba(0,0,0,.23);
+    }
+
+    body[data-theme="daylight"] {
+      color-scheme: light;
+      --bg: #d4e8f8;
+      --bg-end: #a8cfe9;
+      --fg: #1b395a;
+      --muted: #617b93;
+      --accent: #478cbb;
+      --panel: #eaf5fc;
+      --tile: #eff8ff;
+      --tile-text: #203c60;
+      --border: rgba(33,75,109,.13);
+      --shadow: rgba(42,93,134,.13);
+    }
+
+    body[data-theme="warm"] {
+      --bg: #191725;
+      --bg-end: #342a3c;
+      --fg: #fff0e3;
+      --muted: #bb9f9d;
+      --accent: #efb67f;
+      --panel: #282130;
+      --tile: #352838;
+      --tile-text: #ffeadc;
+      --border: rgba(255,201,164,.13);
+      --shadow: rgba(0,0,0,.22);
+    }
+
+    body[data-theme="ring"] {
+      --bg: #0b1c30;
+      --bg-end: #153451;
+      --fg: #dff3ff;
+      --muted: #94b5ca;
+      --accent: #80d9f7;
+      --panel: #132b43;
+      --tile: #203750;
+      --tile-text: #e6f5ff;
+      --border: rgba(126,214,252,.17);
+      --shadow: rgba(0,0,0,.24);
+    }
+
+    body[data-theme="glass"] {
+      color-scheme: light;
+      --bg: #e9e6fa;
+      --bg-end: #bac8f6;
+      --fg: #303d73;
+      --muted: #67719b;
+      --accent: #7889cb;
+      --panel: #f4f1ff;
+      --tile: rgba(255,255,255,.48);
+      --tile-text: #303e73;
+      --border: rgba(255,255,255,.45);
+      --shadow: rgba(61,71,139,.14);
+    }
+
+    body[data-theme="study"] {
+      --bg: #101f29;
+      --bg-end: #1b303e;
+      --fg: #ecf5f4;
+      --muted: #96b2b6;
+      --accent: #82d7bd;
+      --panel: #172c38;
+      --tile: #203441;
+      --tile-text: #f0f8f6;
+      --border: rgba(197,237,234,.12);
+      --shadow: rgba(0,0,0,.23);
+    }
+
+    body[data-theme="sunset"] {
+      --bg: #34304b;
+      --bg-end: #86677f;
+      --fg: #ffe8dc;
+      --muted: #d8bdcb;
+      --accent: #ffd0a0;
+      --panel: #40364f;
+      --tile: #38354e;
+      --tile-text: #ffe5d7;
+      --border: rgba(255,226,216,.16);
+      --shadow: rgba(0,0,0,.22);
     }
 
     * {
       box-sizing: border-box;
     }
 
-    html, body {
-      width: 100%;
-      min-height: 100%;
+    html,
+    body {
       margin: 0;
+      width: 100%;
+      height: 100%;
     }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Inter, system-ui, Arial, sans-serif;
+      background: linear-gradient(
+        155deg,
+        var(--bg),
+        var(--bg-end)
+      );
+      background-attachment: fixed;
+      color: var(--fg);
+      font-family: Inter, system-ui, -apple-system, Arial, sans-serif;
       overflow: hidden;
+      transition: background .4s, color .4s;
     }
 
-    button, input {
+    button,
+    input {
       font: inherit;
     }
 
@@ -51,41 +198,37 @@
       outline-offset: 3px;
     }
 
-    /* Top navigation */
+    /* Navigation */
     .topbar {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      inset: 0 0 auto;
       z-index: 20;
+      padding: 20px 24px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 20px 24px;
       pointer-events: none;
     }
 
-    .icon-btn {
+    .icon-button {
       width: 48px;
       height: 48px;
       display: grid;
       place-items: center;
-      background: rgba(255,255,255,.045);
       border: 1px solid var(--border);
       border-radius: 14px;
-      color: var(--text);
+      background: var(--panel);
+      color: var(--fg);
       opacity: .6;
       transition: opacity .2s, background .2s;
       pointer-events: auto;
     }
 
-    .icon-btn:hover,
-    .icon-btn:focus-visible {
+    .icon-button:hover,
+    .icon-button:focus-visible {
       opacity: 1;
-      background: rgba(255,255,255,.12);
     }
 
-    .icon-btn svg {
+    .icon-button svg {
       width: 23px;
       height: 23px;
       fill: none;
@@ -95,81 +238,157 @@
       stroke-linejoin: round;
     }
 
-    /* Timer display */
+    /* Timer */
     .timer-screen {
+      width: 100%;
       min-height: 100vh;
       min-height: 100dvh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: grid;
+      place-items: center;
       padding: 24px;
     }
 
-    .timer {
+    .timer-shell {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(64px, 20vw, 360px);
-      font-weight: 700;
-      line-height: 1.1;
-      letter-spacing: -.065em;
+      isolation: isolate;
+      max-width: 100%;
+    }
+
+    .timer-shell::before {
+      content: "";
+      position: absolute;
+      inset: -50px;
+      border: 2px solid transparent;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      transition: border-color .4s;
+    }
+
+    body[data-theme="ring"] .timer-shell::before {
+      border-color: rgba(128,217,247,.35);
+      box-shadow:
+        0 0 50px rgba(128,217,247,.08),
+        inset 0 0 40px rgba(128,217,247,.05);
+    }
+
+    .timer-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .018em;
+      font-size: clamp(50px, 17vw, 290px);
+      font-weight: 650;
       font-variant-numeric: tabular-nums;
-      font-feature-settings: "tnum";
+      letter-spacing: -.045em;
+      line-height: 1;
       white-space: nowrap;
       user-select: none;
-      color: var(--text);
-      transition: color .3s ease;
     }
 
-    .timer.finished {
-      color: var(--accent);
-    }
-
-    /* Smooth digit animation */
-    .timer-digit,
-    .timer-separator {
-      display: inline-block;
+    /* Individual odometer reels */
+    .digit-reel {
       position: relative;
-      font-variant-numeric: tabular-nums;
+      display: inline-block;
+      flex: 0 0 .66em;
+      width: .66em;
+      height: 1.1em;
+      overflow: hidden;
+      background: var(--tile);
+      border: 1px solid var(--border);
+      border-radius: .075em;
+      box-shadow:
+        0 .04em .1em var(--shadow),
+        inset 0 .025em .06em rgba(255,255,255,.05);
+      color: var(--tile-text);
+      vertical-align: middle;
+      transform: translateZ(0);
     }
 
-    .timer-digit {
-      min-width: .61em;
-      text-align: center;
-      will-change: transform, opacity;
+    .digit-reel::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      background: rgba(0,0,0,.18);
+      pointer-events: none;
+      z-index: 3;
     }
 
-    .timer-digit.tick-animate {
-      animation: digitTick 350ms cubic-bezier(.22,1,.36,1);
+    .reel-number {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-weight: inherit;
+      line-height: 1;
+      will-change: transform;
+      backface-visibility: hidden;
     }
 
-    @keyframes digitTick {
-      0% {
-        opacity: .45;
-        transform: translateY(7px);
-        filter: blur(2px);
-      }
+    .reel-number.current {
+      transform: translateY(0);
+    }
 
-      100% {
-        opacity: 1;
+    .reel-number.incoming {
+      transform: translateY(-100%);
+    }
+
+    /* Old number rolls down and new number comes from above */
+    .digit-reel.rolling .reel-number.current {
+      animation: rollOld var(--roll-duration)
+        cubic-bezier(.25,.8,.25,1) forwards;
+    }
+
+    .digit-reel.rolling .reel-number.incoming {
+      animation: rollNew var(--roll-duration)
+        cubic-bezier(.25,.8,.25,1) forwards;
+    }
+
+    @keyframes rollOld {
+      from {
         transform: translateY(0);
-        filter: blur(0);
+      }
+      to {
+        transform: translateY(100%);
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .timer-digit.tick-animate {
-        animation: none;
+    @keyframes rollNew {
+      from {
+        transform: translateY(-100%);
+      }
+      to {
+        transform: translateY(0);
       }
     }
 
-    /* Side controls */
+    .separator {
+      display: inline-grid;
+      place-items: center;
+      flex: 0 0 .25em;
+      width: .25em;
+      color: var(--fg);
+      transform: translateY(-.045em);
+    }
+
+    .timer-shell.finished .digit-reel {
+      border-color: var(--accent);
+      box-shadow: 0 0 .12em var(--shadow);
+    }
+
+    /* Normal mode controls */
     .side-controls {
       position: fixed;
-      z-index: 10;
-      right: 18px;
       top: 50%;
+      right: 17px;
       transform: translateY(-50%);
+      z-index: 10;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -182,26 +401,24 @@
       opacity: 1;
     }
 
-    .control-btn {
+    .control-button {
       width: 48px;
       height: 48px;
       display: grid;
       place-items: center;
-      background: rgba(255,255,255,.07);
-      color: var(--text);
+      color: var(--fg);
+      background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 14px;
-      transition: background .2s, transform .2s;
     }
 
-    .control-btn:hover {
-      background: rgba(139,230,187,.18);
-      transform: scale(1.08);
+    .control-button:hover {
+      color: var(--accent);
     }
 
-    .control-btn svg {
-      width: 21px;
-      height: 21px;
+    .control-button svg {
+      width: 22px;
+      height: 22px;
       fill: none;
       stroke: currentColor;
       stroke-width: 2;
@@ -209,11 +426,11 @@
       stroke-linejoin: round;
     }
 
-    /* Fullscreen appearance */
+    /* Fullscreen layout */
     body.fullscreen-active .menu-button,
     body.fullscreen-active .side-controls,
-    body.fullscreen-active .menu-panel,
-    body.fullscreen-active .menu-backdrop {
+    body.fullscreen-active .drawer,
+    body.fullscreen-active .backdrop {
       display: none !important;
     }
 
@@ -222,133 +439,167 @@
     }
 
     body.fullscreen-active .fullscreen-button {
-      opacity: .6;
       background: transparent;
       border-color: transparent;
+      opacity: .6;
     }
 
     body.fullscreen-active .fullscreen-button:hover,
     body.fullscreen-active .fullscreen-button:focus-visible {
       opacity: 1;
-      background: rgba(255,255,255,.1);
+      background: var(--panel);
     }
 
-    /* Settings drawer */
-    .menu-backdrop {
+    /* Drawer */
+    .backdrop {
       position: fixed;
       inset: 0;
       z-index: 29;
-      background: rgba(0,0,0,.55);
-      opacity: 0;
+      background: rgba(0,0,0,.5);
       visibility: hidden;
+      opacity: 0;
       transition: opacity .25s, visibility .25s;
     }
 
-    .menu-backdrop.show {
-      opacity: 1;
+    .backdrop.visible {
       visibility: visible;
+      opacity: 1;
     }
 
-    .menu-panel {
+    .drawer {
       position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
+      inset: 0 auto 0 0;
+      width: min(370px, 90vw);
       z-index: 30;
-      width: min(340px, 88vw);
-      padding: 26px 22px;
+      padding: 25px 22px;
       background: var(--panel);
       border-right: 1px solid var(--border);
       transform: translateX(-100%);
-      transition: transform .25s ease;
+      transition: transform .25s;
       overflow-y: auto;
+      overscroll-behavior: contain;
     }
 
-    .menu-panel.open {
+    .drawer.open {
       transform: translateX(0);
     }
 
-    .menu-header {
+    .drawer-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 34px;
+      justify-content: space-between;
+      margin-bottom: 28px;
     }
 
-    .menu-header h2 {
+    .drawer-header h2 {
       margin: 0;
       font-size: 21px;
+      font-weight: 650;
     }
 
-    .close-btn {
-      padding: 4px 10px;
+    .close-button {
       background: transparent;
+      color: var(--fg);
       border: 0;
-      color: var(--text);
       font-size: 28px;
+      padding: 4px 9px;
     }
 
-    .section-label {
-      margin: 0 0 14px;
-      color: var(--muted);
+    .section-title {
       font-size: 12px;
+      font-weight: 700;
       letter-spacing: .1em;
       text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 13px;
     }
 
     .presets {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+      margin-bottom: 26px;
+    }
+
+    .preset,
+    .theme-option {
+      border: 1px solid var(--border);
+      background: var(--tile);
+      color: var(--tile-text);
+      border-radius: 11px;
+      padding: 12px 10px;
+      transition: border-color .2s;
+    }
+
+    .preset.active {
+      border-color: var(--accent);
+      box-shadow: inset 0 0 0 1px var(--accent);
+    }
+
+    .custom-row {
+      display: flex;
+      gap: 9px;
+      margin-bottom: 26px;
+    }
+
+    .custom-row input {
+      min-width: 0;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--fg);
+      background: var(--bg);
+    }
+
+    .apply-button {
+      padding: 0 18px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #10261d;
+      font-weight: 700;
+    }
+
+    /* Theme selection */
+    .theme-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       margin-bottom: 28px;
     }
 
-    .preset {
-      padding: 13px 8px;
-      background: rgba(255,255,255,.05);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-    }
-
-    .preset.active {
-      background: var(--accent);
-      color: #092116;
-      border-color: var(--accent);
-      font-weight: 700;
-    }
-
-    .custom-row {
+    .theme-option {
       display: flex;
+      align-items: center;
       gap: 10px;
-      margin-bottom: 28px;
+      text-align: left;
+      font-size: 12px;
+      min-height: 49px;
+      background: var(--bg);
+      color: var(--fg);
     }
 
-    .custom-row input {
-      min-width: 0;
-      width: 100%;
-      padding: 13px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
+    .theme-option.active {
+      border-color: var(--accent);
+      outline: 1px solid var(--accent);
     }
 
-    .apply-btn {
-      padding: 0 17px;
-      background: var(--accent);
-      border: 0;
-      border-radius: 10px;
-      color: #092116;
-      font-weight: 700;
+    .theme-dot {
+      display: block;
+      flex: 0 0 23px;
+      width: 23px;
+      height: 23px;
+      border-radius: 7px;
+      border: 1px solid rgba(255,255,255,.15);
     }
 
     .setting-row {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       font-size: 14px;
     }
 
@@ -358,15 +609,16 @@
       accent-color: var(--accent);
     }
 
-    .menu-footer {
-      margin-top: 42px;
-      padding-top: 20px;
+    .drawer-footer {
       border-top: 1px solid var(--border);
+      padding-top: 20px;
+      margin-top: 28px;
       color: var(--muted);
       font-size: 13px;
+      line-height: 1.7;
     }
 
-    .menu-footer a {
+    .drawer-footer a {
       color: var(--accent);
       text-decoration: none;
     }
@@ -375,60 +627,71 @@
       position: absolute;
       width: 1px;
       height: 1px;
-      margin: -1px;
       padding: 0;
+      margin: -1px;
       overflow: hidden;
       clip: rect(0,0,0,0);
       white-space: nowrap;
       border: 0;
     }
 
-    @media (max-width: 650px) {
+    @media (max-width: 700px) {
       .topbar {
         padding: 14px;
       }
 
-      .timer {
-        font-size: clamp(54px, 18vw, 140px);
-      }
-
-      .timer-digit {
-        min-width: .6em;
+      .timer-display {
+        font-size: clamp(43px, 16vw, 110px);
       }
 
       .side-controls {
-        right: 50%;
         top: auto;
+        right: 50%;
         bottom: 22px;
         transform: translateX(50%);
         flex-direction: row;
       }
 
-      .control-btn {
-        width: 46px;
-        height: 46px;
+      body[data-theme="ring"] .timer-shell::before {
+        inset: -18px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :root {
+        --roll-duration: 0ms;
+      }
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
       }
     }
   </style>
 </head>
 
-<body>
+<body data-theme="dark">
 
-  <!-- Navigation -->
   <header class="topbar">
-    <button class="icon-btn menu-button" id="menuButton"
+    <button
+      class="icon-button menu-button"
+      id="menuButton"
       aria-label="Open settings"
-      aria-controls="menuPanel"
-      aria-expanded="false">
+      aria-controls="drawer"
+      aria-expanded="false"
+    >
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
     </button>
 
-    <button class="icon-btn fullscreen-button"
+    <button
+      class="icon-button fullscreen-button"
       id="fullscreenButton"
       aria-label="Enter fullscreen"
-      title="Enter fullscreen">
+      title="Enter fullscreen"
+    >
       <svg id="fullscreenIcon" viewBox="0 0 24 24"
         aria-hidden="true">
         <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
@@ -439,33 +702,43 @@
     </button>
   </header>
 
-  <!-- Main timer -->
   <main class="timer-screen">
-    <h1 class="timer" id="timerDisplay"
-      role="timer" aria-label="Time remaining">
-      <span class="timer-digit">2</span>
-      <span class="timer-digit">5</span>
-      <span class="timer-separator">:</span>
-      <span class="timer-digit">0</span>
-      <span class="timer-digit">0</span>
-    </h1>
+    <div class="timer-shell" id="timerShell">
+      <h1
+        id="timerDisplay"
+        class="timer-display"
+        role="timer"
+        aria-label="25 minutes remaining"
+      ></h1>
+    </div>
 
-    <span class="sr-only" id="timerStatus"
-      role="status" aria-live="polite"></span>
+    <span
+      id="timerStatus"
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+    ></span>
   </main>
 
-  <!-- Side controls -->
   <div class="side-controls">
-    <button class="control-btn" id="startButton"
-      aria-label="Start timer" title="Start / Pause">
+    <button
+      class="control-button"
+      id="startButton"
+      aria-label="Start timer"
+      title="Start / Pause"
+    >
       <svg id="playIcon" viewBox="0 0 24 24"
         aria-hidden="true">
         <path d="m8 5 11 7-11 7z"/>
       </svg>
     </button>
 
-    <button class="control-btn" id="resetButton"
-      aria-label="Reset timer" title="Reset">
+    <button
+      class="control-button"
+      id="resetButton"
+      aria-label="Reset timer"
+      title="Reset timer"
+    >
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M3 11a9 9 0 1 1 2.5 6.3"/>
         <path d="M3 4v7h7"/>
@@ -473,59 +746,113 @@
     </button>
   </div>
 
-  <!-- Settings -->
-  <div class="menu-backdrop" id="menuBackdrop"></div>
+  <div class="backdrop" id="backdrop"></div>
 
-  <aside class="menu-panel" id="menuPanel"
-    aria-label="Timer settings" aria-hidden="true">
-
-    <div class="menu-header">
+  <aside
+    class="drawer"
+    id="drawer"
+    aria-label="Timer settings"
+    aria-hidden="true"
+  >
+    <div class="drawer-header">
       <h2>Study Focus</h2>
-      <button class="close-btn" id="closeMenu"
-        aria-label="Close settings">&times;</button>
+      <button
+        class="close-button"
+        id="closeMenu"
+        aria-label="Close settings"
+      >&times;</button>
     </div>
 
-    <p class="section-label">Study Duration</p>
+    <h3 class="section-title">Study Duration</h3>
 
     <div class="presets">
-      <button class="preset active" data-minutes="25">
-        25 Minutes
-      </button>
-      <button class="preset" data-minutes="45">
-        45 Minutes
-      </button>
-      <button class="preset" data-minutes="60">
-        60 Minutes
-      </button>
-      <button class="preset" data-minutes="5">
-        5 Min Break
-      </button>
+      <button class="preset" data-minutes="25">25 Minutes</button>
+      <button class="preset" data-minutes="45">45 Minutes</button>
+      <button class="preset" data-minutes="60">60 Minutes</button>
+      <button class="preset" data-minutes="5">5 Min Break</button>
     </div>
 
-    <p class="section-label">Custom Timer</p>
+    <h3 class="section-title">Custom Duration</h3>
 
     <div class="custom-row">
-      <input id="customMinutes" type="number"
-        min="1" max="999"
+      <input
+        id="customMinutes"
+        type="number"
+        min="1"
+        max="999"
         placeholder="Minutes"
-        aria-label="Custom duration in minutes">
-      <button class="apply-btn" id="applyCustom">Set</button>
+        aria-label="Custom duration in minutes"
+      >
+      <button class="apply-button" id="applyCustom">Set</button>
     </div>
 
-    <p class="section-label">Preferences</p>
+    <h3 class="section-title">Choose Theme</h3>
+
+    <div class="theme-grid" id="themeGrid">
+      <button class="theme-option" data-theme="dark">
+        <span class="theme-dot" style="background:#101827"></span>
+        Minimal Dark
+      </button>
+
+      <button class="theme-option" data-theme="paper">
+        <span class="theme-dot" style="background:#f6f0e9"></span>
+        Clean Paper
+      </button>
+
+      <button class="theme-option" data-theme="green">
+        <span class="theme-dot" style="background:#0e3430"></span>
+        Focused Green
+      </button>
+
+      <button class="theme-option" data-theme="night">
+        <span class="theme-dot" style="background:#333566"></span>
+        Night Study
+      </button>
+
+      <button class="theme-option" data-theme="daylight">
+        <span class="theme-dot" style="background:#a8cfe9"></span>
+        Calm Daylight
+      </button>
+
+      <button class="theme-option" data-theme="warm">
+        <span class="theme-dot" style="background:#342a3c"></span>
+        Warm Focus
+      </button>
+
+      <button class="theme-option" data-theme="ring">
+        <span class="theme-dot" style="background:#153451"></span>
+        Ring + Flip
+      </button>
+
+      <button class="theme-option" data-theme="glass">
+        <span class="theme-dot" style="background:#bac8f6"></span>
+        Glass Flip
+      </button>
+
+      <button class="theme-option" data-theme="study">
+        <span class="theme-dot" style="background:#1b303e"></span>
+        Study Minimal
+      </button>
+
+      <button class="theme-option" data-theme="sunset">
+        <span class="theme-dot" style="background:#86677f"></span>
+        Serene Sunset
+      </button>
+    </div>
+
+    <h3 class="section-title">Preferences</h3>
 
     <label class="setting-row">
       <span>Play alarm when finished</span>
       <input type="checkbox" id="alarmToggle" checked>
     </label>
 
-    <div class="menu-footer">
-      Made for focused learning.
+    <div class="drawer-footer">
+      A distraction-free timer for students.
       <br><br>
       Developed by
       <a href="https://biharkalyan.in"
-        target="_blank"
-        rel="noopener noreferrer">
+        target="_blank" rel="noopener noreferrer">
         BiharKalyan.in
       </a>
     </div>
@@ -534,16 +861,49 @@
   <script>
     "use strict";
 
-    const timerDisplay = document.getElementById("timerDisplay");
-    const timerStatus = document.getElementById("timerStatus");
-    const startButton = document.getElementById("startButton");
-    const resetButton = document.getElementById("resetButton");
-    const playIcon = document.getElementById("playIcon");
+    const STORAGE_KEY = "biharkalyan.studyFocus.v1";
 
-    const menuButton = document.getElementById("menuButton");
-    const closeMenuButton = document.getElementById("closeMenu");
-    const menuPanel = document.getElementById("menuPanel");
-    const menuBackdrop = document.getElementById("menuBackdrop");
+    const defaultSettings = {
+      theme: "dark",
+      duration: 25,
+      alarm: true
+    };
+
+    const allowedThemes = new Set([
+      "dark",
+      "paper",
+      "green",
+      "night",
+      "daylight",
+      "warm",
+      "ring",
+      "glass",
+      "study",
+      "sunset"
+    ]);
+
+    const timerDisplay =
+      document.getElementById("timerDisplay");
+    const timerShell =
+      document.getElementById("timerShell");
+    const timerStatus =
+      document.getElementById("timerStatus");
+
+    const startButton =
+      document.getElementById("startButton");
+    const resetButton =
+      document.getElementById("resetButton");
+    const playIcon =
+      document.getElementById("playIcon");
+
+    const menuButton =
+      document.getElementById("menuButton");
+    const closeMenuButton =
+      document.getElementById("closeMenu");
+    const drawer =
+      document.getElementById("drawer");
+    const backdrop =
+      document.getElementById("backdrop");
 
     const fullscreenButton =
       document.getElementById("fullscreenButton");
@@ -552,16 +912,27 @@
 
     const customMinutes =
       document.getElementById("customMinutes");
-    const applyCustom = document.getElementById("applyCustom");
-    const alarmToggle = document.getElementById("alarmToggle");
-    const presets = document.querySelectorAll(".preset");
+    const applyCustom =
+      document.getElementById("applyCustom");
+    const alarmToggle =
+      document.getElementById("alarmToggle");
 
-    let selectedSeconds = 25 * 60;
+    const presets =
+      document.querySelectorAll(".preset");
+    const themeButtons =
+      document.querySelectorAll(".theme-option");
+
+    let settings = loadSettings();
+    let selectedSeconds = settings.duration * 60;
     let remainingSeconds = selectedSeconds;
+
     let running = false;
     let endTime = 0;
     let intervalId = null;
     let audioContext = null;
+
+    let previousTime = "";
+    let reelElements = [];
 
     const playSVG = '<path d="m8 5 11 7-11 7z"/>';
     const pauseSVG = '<path d="M8 5v14M16 5v14"/>';
@@ -573,78 +944,183 @@
       <path d="M8 21H5a2 2 0 0 1-2-2v-3"/>
     `;
 
-    const exitSVG =
-      '<path d="M5 5l14 14M19 5L5 19"/>';
+    const exitSVG = `
+      <path d="M5 5l14 14M19 5L5 19"/>
+    `;
 
-    // Render individual digits without rebuilding the entire timer.
-    function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60);
-      const secs = seconds % 60;
+    function loadSettings() {
+      try {
+        const saved = JSON.parse(
+          localStorage.getItem(STORAGE_KEY) || "{}"
+        );
 
-      return String(minutes).padStart(2, "0") +
-        ":" + String(secs).padStart(2, "0");
+        const duration = Number(saved.duration);
+
+        return {
+          theme: allowedThemes.has(saved.theme)
+            ? saved.theme
+            : defaultSettings.theme,
+
+          duration:
+            Number.isInteger(duration) &&
+            duration >= 1 &&
+            duration <= 999
+              ? duration
+              : defaultSettings.duration,
+
+          alarm: typeof saved.alarm === "boolean"
+            ? saved.alarm
+            : defaultSettings.alarm
+        };
+      } catch {
+        return { ...defaultSettings };
+      }
     }
 
-    function renderDigits(time, animate = true) {
-      const existing = Array.from(timerDisplay.children);
-      const currentTime = existing.map(el => el.textContent).join("");
+    function saveSettings() {
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(settings)
+        );
+      } catch {
+        // The timer remains usable when storage is blocked.
+      }
+    }
 
-      if (currentTime === time) return;
+    function formatTime(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
 
-      // Build digits only when the timer length changes.
-      if (existing.length !== time.length) {
-        timerDisplay.replaceChildren();
+      return String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0");
+    }
 
-        for (const char of time) {
-          const span = document.createElement("span");
-          span.className = char === ":"
-            ? "timer-separator"
-            : "timer-digit";
-          span.textContent = char;
-          timerDisplay.appendChild(span);
+    // Create one physical-looking reel for each digit.
+    function createReel(digit) {
+      const reel = document.createElement("span");
+      reel.className = "digit-reel";
+      reel.dataset.value = digit;
+
+      const current = document.createElement("span");
+      current.className = "reel-number current";
+      current.textContent = digit;
+
+      reel.appendChild(current);
+
+      return reel;
+    }
+
+    function createTimerDisplay(time) {
+      timerDisplay.replaceChildren();
+      reelElements = [];
+
+      for (const char of time) {
+        if (char === ":") {
+          const separator = document.createElement("span");
+          separator.className = "separator";
+          separator.textContent = ":";
+          separator.setAttribute("aria-hidden", "true");
+          timerDisplay.appendChild(separator);
+        } else {
+          const reel = createReel(char);
+          reelElements.push(reel);
+          timerDisplay.appendChild(reel);
         }
+      }
 
+      previousTime = time;
+    }
+
+    // Complete an animation safely before starting another.
+    function finalizeReel(reel) {
+      const current = reel.querySelector(".current");
+      const incoming = reel.querySelector(".incoming");
+
+      if (!incoming) {
+        reel.classList.remove("rolling");
         return;
       }
 
-      const spans = timerDisplay.children;
+      if (current) current.remove();
 
-      for (let i = 0; i < time.length; i++) {
-        const span = spans[i];
+      incoming.classList.remove("incoming");
+      incoming.classList.add("current");
 
-        if (span.textContent === time[i]) continue;
+      incoming.style.animation = "none";
+      incoming.style.transform = "translateY(0)";
 
-        span.textContent = time[i];
+      reel.classList.remove("rolling");
+    }
 
-        if (animate && time[i] !== ":") {
-          span.classList.remove("tick-animate");
+    function rollDigit(reel, nextDigit) {
+      if (reel.dataset.value === nextDigit) return;
 
-          // Restart the animation for this changed digit.
-          void span.offsetWidth;
+      finalizeReel(reel);
 
-          span.classList.add("tick-animate");
-        }
+      const incoming = document.createElement("span");
+      incoming.className = "reel-number incoming";
+      incoming.textContent = nextDigit;
+
+      reel.dataset.value = nextDigit;
+      reel.appendChild(incoming);
+
+      if (window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches) {
+        finalizeReel(reel);
+        return;
       }
+
+      // Start the downward odometer movement.
+      void reel.offsetWidth;
+      reel.classList.add("rolling");
+
+      incoming.addEventListener(
+        "animationend",
+        () => {
+          if (incoming.isConnected) {
+            finalizeReel(reel);
+          }
+        },
+        { once: true }
+      );
     }
 
     function updateDisplay(animate = true) {
       const time = formatTime(remainingSeconds);
 
-      renderDigits(time, animate);
+      if (time === previousTime) return;
+
+      if (!animate || time.length !== previousTime.length) {
+        createTimerDisplay(time);
+      } else {
+        const digits = time.replace(":", "");
+
+        for (let i = 0; i < digits.length; i++) {
+          rollDigit(reelElements[i], digits[i]);
+        }
+
+        previousTime = time;
+      }
+
       timerDisplay.setAttribute(
         "aria-label",
         time + " remaining"
       );
 
-      document.title = time + " | Study Focus Timer";
+      document.title =
+        time + " | Study Focus Timer";
     }
 
     function updateControls() {
       playIcon.innerHTML = running ? pauseSVG : playSVG;
-      startButton.setAttribute(
-        "aria-label", running ? "Pause timer" : "Start timer"
-      );
-      startButton.title = running ? "Pause" : "Start";
+
+      const label = running ? "Pause timer" : "Start timer";
+
+      startButton.setAttribute("aria-label", label);
+      startButton.title = label;
     }
 
     function clearTimer() {
@@ -658,7 +1134,7 @@
     }
 
     function prepareAudio() {
-      if (!alarmToggle.checked) return;
+      if (!settings.alarm) return;
 
       try {
         const AudioContextClass =
@@ -679,7 +1155,7 @@
     }
 
     function playAlarm() {
-      if (!alarmToggle.checked || !audioContext) return;
+      if (!settings.alarm || !audioContext) return;
 
       try {
         const now = audioContext.currentTime;
@@ -689,26 +1165,26 @@
           const gain = audioContext.createGain();
 
           oscillator.type = "sine";
-          oscillator.frequency.value = 880;
+          oscillator.frequency.value = 740;
 
           oscillator.connect(gain);
           gain.connect(audioContext.destination);
 
-          const start = now + i * .45;
+          const start = now + i * .48;
 
           gain.gain.setValueAtTime(0, start);
           gain.gain.linearRampToValueAtTime(
-            .22, start + .03
+            .18, start + .04
           );
           gain.gain.exponentialRampToValueAtTime(
-            .001, start + .30
+            .001, start + .34
           );
 
           oscillator.start(start);
-          oscillator.stop(start + .32);
+          oscillator.stop(start + .36);
         }
       } catch (error) {
-        console.warn("Alarm could not play:", error);
+        console.warn("Unable to play alarm:", error);
       }
     }
 
@@ -716,9 +1192,9 @@
       clearTimer();
 
       remainingSeconds = 0;
-      updateDisplay();
+      updateDisplay(true);
 
-      timerDisplay.classList.add("finished");
+      timerShell.classList.add("finished");
       timerStatus.textContent = "Study session completed.";
 
       playAlarm();
@@ -732,7 +1208,7 @@
         Math.ceil((endTime - Date.now()) / 1000)
       );
 
-      updateDisplay();
+      updateDisplay(true);
 
       if (remainingSeconds === 0) {
         finishTimer();
@@ -744,11 +1220,12 @@
 
       if (remainingSeconds === 0) {
         remainingSeconds = selectedSeconds;
+        updateDisplay(false);
       }
 
       prepareAudio();
 
-      timerDisplay.classList.remove("finished");
+      timerShell.classList.remove("finished");
       timerStatus.textContent = "Study session started.";
 
       endTime = Date.now() + remainingSeconds * 1000;
@@ -772,36 +1249,117 @@
       clearTimer();
 
       remainingSeconds = selectedSeconds;
-      timerDisplay.classList.remove("finished");
+      timerShell.classList.remove("finished");
 
       updateDisplay(false);
       timerStatus.textContent = "Timer reset.";
     }
 
+    function updatePresets() {
+      presets.forEach(button => {
+        const minutes = Number(button.dataset.minutes);
+
+        button.classList.toggle(
+          "active",
+          minutes === settings.duration
+        );
+      });
+    }
+
     function setDuration(minutes) {
-      if (!Number.isInteger(minutes) ||
-          minutes < 1 || minutes > 999) {
+      if (
+        !Number.isInteger(minutes) ||
+        minutes < 1 ||
+        minutes > 999
+      ) {
         return;
       }
 
+      settings.duration = minutes;
       selectedSeconds = minutes * 60;
+
+      saveSettings();
       resetTimer();
-
-      presets.forEach(button => {
-        button.classList.toggle(
-          "active",
-          Number(button.dataset.minutes) === minutes
-        );
-      });
-
+      updatePresets();
       closeSettings();
     }
 
+    function setTheme(theme) {
+      if (!allowedThemes.has(theme)) return;
+
+      settings.theme = theme;
+      document.body.dataset.theme = theme;
+
+      themeButtons.forEach(button => {
+        const selected = button.dataset.theme === theme;
+
+        button.classList.toggle("active", selected);
+        button.setAttribute(
+          "aria-pressed",
+          String(selected)
+        );
+      });
+
+      saveSettings();
+    }
+
+    function openSettings() {
+      if (document.fullscreenElement) return;
+
+      drawer.classList.add("open");
+      backdrop.classList.add("visible");
+
+      drawer.setAttribute("aria-hidden", "false");
+      menuButton.setAttribute("aria-expanded", "true");
+
+      closeMenuButton.focus();
+    }
+
+    function closeSettings() {
+      if (drawer.contains(document.activeElement)) {
+        menuButton.focus();
+      }
+
+      drawer.classList.remove("open");
+      backdrop.classList.remove("visible");
+
+      drawer.setAttribute("aria-hidden", "true");
+      menuButton.setAttribute("aria-expanded", "false");
+    }
+
+    function updateFullscreenUI() {
+      const fullscreen = Boolean(document.fullscreenElement);
+
+      document.body.classList.toggle(
+        "fullscreen-active",
+        fullscreen
+      );
+
+      fullscreenIcon.innerHTML =
+        fullscreen ? exitSVG : expandSVG;
+
+      const label = fullscreen
+        ? "Exit fullscreen"
+        : "Enter fullscreen";
+
+      fullscreenButton.setAttribute("aria-label", label);
+      fullscreenButton.title = label;
+
+      if (fullscreen) {
+        closeSettings();
+      }
+    }
+
+    // Events
     startButton.addEventListener("click", () => {
       running ? pauseTimer() : startTimer();
     });
 
     resetButton.addEventListener("click", resetTimer);
+
+    menuButton.addEventListener("click", openSettings);
+    closeMenuButton.addEventListener("click", closeSettings);
+    backdrop.addEventListener("click", closeSettings);
 
     presets.forEach(button => {
       button.addEventListener("click", () => {
@@ -809,11 +1367,20 @@
       });
     });
 
+    themeButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        setTheme(button.dataset.theme);
+      });
+    });
+
     applyCustom.addEventListener("click", () => {
       const minutes = Number(customMinutes.value);
 
-      if (!Number.isInteger(minutes) ||
-          minutes < 1 || minutes > 999) {
+      if (
+        !Number.isInteger(minutes) ||
+        minutes < 1 ||
+        minutes > 999
+      ) {
         customMinutes.setCustomValidity(
           "Enter a whole number between 1 and 999."
         );
@@ -821,6 +1388,7 @@
         return;
       }
 
+      customMinutes.setCustomValidity("");
       setDuration(minutes);
     });
 
@@ -834,58 +1402,10 @@
       }
     });
 
-    function openSettings() {
-      if (document.fullscreenElement) return;
-
-      menuPanel.classList.add("open");
-      menuBackdrop.classList.add("show");
-      menuPanel.setAttribute("aria-hidden", "false");
-      menuButton.setAttribute("aria-expanded", "true");
-      closeMenuButton.focus();
-    }
-
-    function closeSettings() {
-      if (menuPanel.contains(document.activeElement)) {
-        menuButton.focus();
-      }
-
-      menuPanel.classList.remove("open");
-      menuBackdrop.classList.remove("show");
-      menuPanel.setAttribute("aria-hidden", "true");
-      menuButton.setAttribute("aria-expanded", "false");
-    }
-
-    menuButton.addEventListener("click", openSettings);
-    closeMenuButton.addEventListener("click", closeSettings);
-    menuBackdrop.addEventListener("click", closeSettings);
-
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        closeSettings();
-      }
+    alarmToggle.addEventListener("change", () => {
+      settings.alarm = alarmToggle.checked;
+      saveSettings();
     });
-
-    function updateFullscreenUI() {
-      const isFullscreen = Boolean(document.fullscreenElement);
-
-      document.body.classList.toggle(
-        "fullscreen-active", isFullscreen
-      );
-
-      fullscreenIcon.innerHTML =
-        isFullscreen ? exitSVG : expandSVG;
-
-      const label = isFullscreen
-        ? "Exit fullscreen"
-        : "Enter fullscreen";
-
-      fullscreenButton.setAttribute("aria-label", label);
-      fullscreenButton.title = label;
-
-      if (isFullscreen) {
-        closeSettings();
-      }
-    }
 
     fullscreenButton.addEventListener("click", async () => {
       try {
@@ -905,17 +1425,31 @@
     });
 
     document.addEventListener(
-      "fullscreenchange", updateFullscreenUI
+      "fullscreenchange",
+      updateFullscreenUI
     );
 
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) tick();
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeSettings();
+      }
     });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        tick();
+      }
+    });
+
+    // Initialize
+    alarmToggle.checked = settings.alarm;
+
+    setTheme(settings.theme);
+    updatePresets();
 
     updateDisplay(false);
     updateControls();
     updateFullscreenUI();
   </script>
-
 </body>
 </html>
