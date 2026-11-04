@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080b12">
-  <link rel="icon" type="image/webp" href="favicon.webp">
-  <meta name="description" content="A clean, distraction-free fullscreen study timer for students.">
+  <meta name="description" content="A distraction-free fullscreen study timer for students.">
+  <link rel="icon" type="image/webp" href="./favicon.webp?v=2">
   <title>Study Focus Timer | BiharKalyan.in</title>
 
   <style>
@@ -21,14 +21,16 @@
     }
 
     * {
-      margin: 0;
-      padding: 0;
       box-sizing: border-box;
     }
 
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+    }
+
     body {
-      min-height: 100vh;
-      min-height: 100dvh;
       background: var(--bg);
       color: var(--text);
       font-family: Inter, system-ui, Arial, sans-serif;
@@ -43,6 +45,13 @@
       cursor: pointer;
     }
 
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* Top navigation */
     .topbar {
       position: fixed;
       top: 0;
@@ -50,8 +59,8 @@
       right: 0;
       z-index: 20;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       padding: 20px 24px;
       pointer-events: none;
     }
@@ -86,31 +95,75 @@
       stroke-linejoin: round;
     }
 
+    /* Timer display */
     .timer-screen {
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       padding: 24px;
     }
 
     .timer {
-      font-size: clamp(90px, 22vw, 360px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(64px, 20vw, 360px);
       font-weight: 700;
-      line-height: 1;
+      line-height: 1.1;
       letter-spacing: -.065em;
       font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
       white-space: nowrap;
       user-select: none;
-      text-align: center;
-      transition: color .3s;
+      color: var(--text);
+      transition: color .3s ease;
     }
 
     .timer.finished {
       color: var(--accent);
     }
 
+    /* Smooth digit animation */
+    .timer-digit,
+    .timer-separator {
+      display: inline-block;
+      position: relative;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-digit {
+      min-width: .61em;
+      text-align: center;
+      will-change: transform, opacity;
+    }
+
+    .timer-digit.tick-animate {
+      animation: digitTick 350ms cubic-bezier(.22,1,.36,1);
+    }
+
+    @keyframes digitTick {
+      0% {
+        opacity: .45;
+        transform: translateY(7px);
+        filter: blur(2px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .timer-digit.tick-animate {
+        animation: none;
+      }
+    }
+
+    /* Side controls */
     .side-controls {
       position: fixed;
       z-index: 10;
@@ -130,14 +183,14 @@
     }
 
     .control-btn {
-      height: 48px;
       width: 48px;
+      height: 48px;
       display: grid;
       place-items: center;
-      border: 1px solid var(--border);
-      border-radius: 14px;
       background: rgba(255,255,255,.07);
       color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 14px;
       transition: background .2s, transform .2s;
     }
 
@@ -156,6 +209,31 @@
       stroke-linejoin: round;
     }
 
+    /* Fullscreen appearance */
+    body.fullscreen-active .menu-button,
+    body.fullscreen-active .side-controls,
+    body.fullscreen-active .menu-panel,
+    body.fullscreen-active .menu-backdrop {
+      display: none !important;
+    }
+
+    body.fullscreen-active .topbar {
+      justify-content: flex-end;
+    }
+
+    body.fullscreen-active .fullscreen-button {
+      opacity: .6;
+      background: transparent;
+      border-color: transparent;
+    }
+
+    body.fullscreen-active .fullscreen-button:hover,
+    body.fullscreen-active .fullscreen-button:focus-visible {
+      opacity: 1;
+      background: rgba(255,255,255,.1);
+    }
+
+    /* Settings drawer */
     .menu-backdrop {
       position: fixed;
       inset: 0;
@@ -163,7 +241,7 @@
       background: rgba(0,0,0,.55);
       opacity: 0;
       visibility: hidden;
-      transition: .25s;
+      transition: opacity .25s, visibility .25s;
     }
 
     .menu-backdrop.show {
@@ -176,11 +254,11 @@
       top: 0;
       left: 0;
       bottom: 0;
-      width: min(340px, 88vw);
       z-index: 30;
+      width: min(340px, 88vw);
+      padding: 26px 22px;
       background: var(--panel);
       border-right: 1px solid var(--border);
-      padding: 26px 22px;
       transform: translateX(-100%);
       transition: transform .25s ease;
       overflow-y: auto;
@@ -198,23 +276,24 @@
     }
 
     .menu-header h2 {
+      margin: 0;
       font-size: 21px;
     }
 
     .close-btn {
-      background: transparent;
-      color: var(--text);
-      border: 0;
-      font-size: 28px;
       padding: 4px 10px;
+      background: transparent;
+      border: 0;
+      color: var(--text);
+      font-size: 28px;
     }
 
     .section-label {
+      margin: 0 0 14px;
       color: var(--muted);
       font-size: 12px;
       letter-spacing: .1em;
       text-transform: uppercase;
-      margin-bottom: 14px;
     }
 
     .presets {
@@ -252,23 +331,22 @@
       background: rgba(255,255,255,.05);
       border: 1px solid var(--border);
       border-radius: 10px;
-      color: white;
-      outline: none;
+      color: var(--text);
     }
 
     .apply-btn {
       padding: 0 17px;
+      background: var(--accent);
       border: 0;
       border-radius: 10px;
-      background: var(--accent);
       color: #092116;
       font-weight: 700;
     }
 
     .setting-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 12px;
       margin-bottom: 24px;
       font-size: 14px;
@@ -284,8 +362,8 @@
       margin-top: 42px;
       padding-top: 20px;
       border-top: 1px solid var(--border);
-      font-size: 13px;
       color: var(--muted);
+      font-size: 13px;
     }
 
     .menu-footer a {
@@ -297,8 +375,8 @@
       position: absolute;
       width: 1px;
       height: 1px;
-      padding: 0;
       margin: -1px;
+      padding: 0;
       overflow: hidden;
       clip: rect(0,0,0,0);
       white-space: nowrap;
@@ -311,7 +389,11 @@
       }
 
       .timer {
-        font-size: clamp(64px, 20vw, 140px);
+        font-size: clamp(54px, 18vw, 140px);
+      }
+
+      .timer-digit {
+        min-width: .6em;
       }
 
       .side-controls {
@@ -332,19 +414,23 @@
 
 <body>
 
-  <!-- Top navigation -->
+  <!-- Navigation -->
   <header class="topbar">
-    <button class="icon-btn" id="menuButton"
-      aria-label="Open settings" aria-controls="menuPanel"
+    <button class="icon-btn menu-button" id="menuButton"
+      aria-label="Open settings"
+      aria-controls="menuPanel"
       aria-expanded="false">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
     </button>
 
-    <button class="icon-btn" id="fullscreenButton"
-      aria-label="Enter fullscreen">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
+    <button class="icon-btn fullscreen-button"
+      id="fullscreenButton"
+      aria-label="Enter fullscreen"
+      title="Enter fullscreen">
+      <svg id="fullscreenIcon" viewBox="0 0 24 24"
+        aria-hidden="true">
         <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
         <path d="M16 3h3a2 2 0 0 1 2 2v3"/>
         <path d="M21 16v3a2 2 0 0 1-2 2h-3"/>
@@ -356,17 +442,24 @@
   <!-- Main timer -->
   <main class="timer-screen">
     <h1 class="timer" id="timerDisplay"
-      role="timer" aria-label="Time remaining">25:00</h1>
+      role="timer" aria-label="Time remaining">
+      <span class="timer-digit">2</span>
+      <span class="timer-digit">5</span>
+      <span class="timer-separator">:</span>
+      <span class="timer-digit">0</span>
+      <span class="timer-digit">0</span>
+    </h1>
+
     <span class="sr-only" id="timerStatus"
       role="status" aria-live="polite"></span>
   </main>
 
   <!-- Side controls -->
   <div class="side-controls">
-
     <button class="control-btn" id="startButton"
       aria-label="Start timer" title="Start / Pause">
-      <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true">
+      <svg id="playIcon" viewBox="0 0 24 24"
+        aria-hidden="true">
         <path d="m8 5 11 7-11 7z"/>
       </svg>
     </button>
@@ -378,10 +471,9 @@
         <path d="M3 4v7h7"/>
       </svg>
     </button>
-
   </div>
 
-  <!-- Settings menu -->
+  <!-- Settings -->
   <div class="menu-backdrop" id="menuBackdrop"></div>
 
   <aside class="menu-panel" id="menuPanel"
@@ -396,17 +488,26 @@
     <p class="section-label">Study Duration</p>
 
     <div class="presets">
-      <button class="preset active" data-minutes="25">25 Minutes</button>
-      <button class="preset" data-minutes="45">45 Minutes</button>
-      <button class="preset" data-minutes="60">60 Minutes</button>
-      <button class="preset" data-minutes="5">5 Min Break</button>
+      <button class="preset active" data-minutes="25">
+        25 Minutes
+      </button>
+      <button class="preset" data-minutes="45">
+        45 Minutes
+      </button>
+      <button class="preset" data-minutes="60">
+        60 Minutes
+      </button>
+      <button class="preset" data-minutes="5">
+        5 Min Break
+      </button>
     </div>
 
     <p class="section-label">Custom Timer</p>
 
     <div class="custom-row">
       <input id="customMinutes" type="number"
-        min="1" max="999" placeholder="Minutes"
+        min="1" max="999"
+        placeholder="Minutes"
         aria-label="Custom duration in minutes">
       <button class="apply-btn" id="applyCustom">Set</button>
     </div>
@@ -419,14 +520,15 @@
     </label>
 
     <div class="menu-footer">
-      Made for focused learning.<br><br>
+      Made for focused learning.
+      <br><br>
       Developed by
       <a href="https://biharkalyan.in"
-        target="_blank" rel="noopener noreferrer">
+        target="_blank"
+        rel="noopener noreferrer">
         BiharKalyan.in
       </a>
     </div>
-
   </aside>
 
   <script>
@@ -443,8 +545,13 @@
     const menuPanel = document.getElementById("menuPanel");
     const menuBackdrop = document.getElementById("menuBackdrop");
 
-    const fullscreenButton = document.getElementById("fullscreenButton");
-    const customMinutes = document.getElementById("customMinutes");
+    const fullscreenButton =
+      document.getElementById("fullscreenButton");
+    const fullscreenIcon =
+      document.getElementById("fullscreenIcon");
+
+    const customMinutes =
+      document.getElementById("customMinutes");
     const applyCustom = document.getElementById("applyCustom");
     const alarmToggle = document.getElementById("alarmToggle");
     const presets = document.querySelectorAll(".preset");
@@ -457,9 +564,19 @@
     let audioContext = null;
 
     const playSVG = '<path d="m8 5 11 7-11 7z"/>';
-    const pauseSVG =
-      '<path d="M8 5v14M16 5v14"/>';
+    const pauseSVG = '<path d="M8 5v14M16 5v14"/>';
 
+    const expandSVG = `
+      <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+      <path d="M16 3h3a2 2 0 0 1 2 2v3"/>
+      <path d="M21 16v3a2 2 0 0 1-2 2h-3"/>
+      <path d="M8 21H5a2 2 0 0 1-2-2v-3"/>
+    `;
+
+    const exitSVG =
+      '<path d="M5 5l14 14M19 5L5 19"/>';
+
+    // Render individual digits without rebuilding the entire timer.
     function formatTime(seconds) {
       const minutes = Math.floor(seconds / 60);
       const secs = seconds % 60;
@@ -468,10 +585,58 @@
         ":" + String(secs).padStart(2, "0");
     }
 
-    function updateDisplay() {
-      timerDisplay.textContent = formatTime(remainingSeconds);
-      document.title = formatTime(remainingSeconds) +
-        " | Study Focus Timer";
+    function renderDigits(time, animate = true) {
+      const existing = Array.from(timerDisplay.children);
+      const currentTime = existing.map(el => el.textContent).join("");
+
+      if (currentTime === time) return;
+
+      // Build digits only when the timer length changes.
+      if (existing.length !== time.length) {
+        timerDisplay.replaceChildren();
+
+        for (const char of time) {
+          const span = document.createElement("span");
+          span.className = char === ":"
+            ? "timer-separator"
+            : "timer-digit";
+          span.textContent = char;
+          timerDisplay.appendChild(span);
+        }
+
+        return;
+      }
+
+      const spans = timerDisplay.children;
+
+      for (let i = 0; i < time.length; i++) {
+        const span = spans[i];
+
+        if (span.textContent === time[i]) continue;
+
+        span.textContent = time[i];
+
+        if (animate && time[i] !== ":") {
+          span.classList.remove("tick-animate");
+
+          // Restart the animation for this changed digit.
+          void span.offsetWidth;
+
+          span.classList.add("tick-animate");
+        }
+      }
+    }
+
+    function updateDisplay(animate = true) {
+      const time = formatTime(remainingSeconds);
+
+      renderDigits(time, animate);
+      timerDisplay.setAttribute(
+        "aria-label",
+        time + " remaining"
+      );
+
+      document.title = time + " | Study Focus Timer";
     }
 
     function updateControls() {
@@ -529,15 +694,18 @@
           oscillator.connect(gain);
           gain.connect(audioContext.destination);
 
-          const start = now + i * 0.45;
+          const start = now + i * .45;
+
           gain.gain.setValueAtTime(0, start);
-          gain.gain.linearRampToValueAtTime(0.22, start + 0.03);
+          gain.gain.linearRampToValueAtTime(
+            .22, start + .03
+          );
           gain.gain.exponentialRampToValueAtTime(
-            0.001, start + 0.30
+            .001, start + .30
           );
 
           oscillator.start(start);
-          oscillator.stop(start + 0.32);
+          oscillator.stop(start + .32);
         }
       } catch (error) {
         console.warn("Alarm could not play:", error);
@@ -589,7 +757,7 @@
       updateControls();
       tick();
 
-      intervalId = setInterval(tick, 200);
+      intervalId = setInterval(tick, 100);
     }
 
     function pauseTimer() {
@@ -606,7 +774,7 @@
       remainingSeconds = selectedSeconds;
       timerDisplay.classList.remove("finished");
 
-      updateDisplay();
+      updateDisplay(false);
       timerStatus.textContent = "Timer reset.";
     }
 
@@ -621,7 +789,8 @@
 
       presets.forEach(button => {
         button.classList.toggle(
-          "active", Number(button.dataset.minutes) === minutes
+          "active",
+          Number(button.dataset.minutes) === minutes
         );
       });
 
@@ -666,6 +835,8 @@
     });
 
     function openSettings() {
+      if (document.fullscreenElement) return;
+
       menuPanel.classList.add("open");
       menuBackdrop.classList.add("show");
       menuPanel.setAttribute("aria-hidden", "false");
@@ -674,9 +845,7 @@
     }
 
     function closeSettings() {
-      const wasOpen = menuPanel.classList.contains("open");
-
-      if (wasOpen && menuPanel.contains(document.activeElement)) {
+      if (menuPanel.contains(document.activeElement)) {
         menuButton.focus();
       }
 
@@ -696,6 +865,28 @@
       }
     });
 
+    function updateFullscreenUI() {
+      const isFullscreen = Boolean(document.fullscreenElement);
+
+      document.body.classList.toggle(
+        "fullscreen-active", isFullscreen
+      );
+
+      fullscreenIcon.innerHTML =
+        isFullscreen ? exitSVG : expandSVG;
+
+      const label = isFullscreen
+        ? "Exit fullscreen"
+        : "Enter fullscreen";
+
+      fullscreenButton.setAttribute("aria-label", label);
+      fullscreenButton.title = label;
+
+      if (isFullscreen) {
+        closeSettings();
+      }
+    }
+
     fullscreenButton.addEventListener("click", async () => {
       try {
         if (!document.fullscreenElement) {
@@ -703,6 +894,7 @@
             return;
           }
 
+          closeSettings();
           await document.documentElement.requestFullscreen();
         } else {
           await document.exitFullscreen();
@@ -712,25 +904,17 @@
       }
     });
 
-    document.addEventListener("fullscreenchange", () => {
-      const isFullscreen = Boolean(document.fullscreenElement);
+    document.addEventListener(
+      "fullscreenchange", updateFullscreenUI
+    );
 
-      fullscreenButton.setAttribute(
-        "aria-label",
-        isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
-      );
-
-      fullscreenButton.title =
-        isFullscreen ? "Exit fullscreen" : "Enter fullscreen";
-    });
-
-    // Recalculate the timer when returning to the tab.
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) tick();
     });
 
-    updateDisplay();
+    updateDisplay(false);
     updateControls();
+    updateFullscreenUI();
   </script>
 
 </body>
