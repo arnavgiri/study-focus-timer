@@ -1,172 +1,737 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#090e17">
-  <meta name="description" content="A minimal fullscreen study timer for distraction-free focus, with presets and an alarm.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b12">
+  <link rel="icon" type="image/webp" href="favicon.webp">
+  <meta name="description" content="A clean, distraction-free fullscreen study timer for students.">
   <title>Study Focus Timer | BiharKalyan.in</title>
+
   <style>
-    :root { color-scheme:dark; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; --bg:#090e17;--text:#f8fafc;--muted:#9caec4;--accent:#9af0cb;--panel:#172331; }
-    * { box-sizing:border-box; }
-    html,body { width:100%;min-height:100%;margin:0; }
-    body { overflow:hidden;min-height:100svh;background:var(--bg);color:var(--text); }
-    button,input { font:inherit; }
-    button { cursor:pointer; }
-    button:focus-visible,input:focus-visible,a:focus-visible { outline:2px solid var(--accent);outline-offset:4px; }
-    .stage { position:relative;display:grid;place-items:center;min-height:100svh;min-height:100dvh;width:100%;isolation:isolate; }
-    .time { margin:0;padding:0 .055em;font-size:clamp(5.3rem,22vw,28rem);font-weight:750;line-height:1.02;font-variant-numeric:tabular-nums;letter-spacing:-.065em;white-space:nowrap;text-align:center;user-select:none;font-feature-settings:"tnum"; }
-    .time.long { font-size:clamp(3.4rem,15vw,18rem); }
-    .time.finished { color:var(--accent); }
-    .corner { position:fixed;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));z-index:5; }
-    .ghost { background:rgba(25,39,56,.55);color:#eef8ff;border:1px solid rgba(218,235,255,.15);border-radius:14px;opacity:.6;backdrop-filter:blur(10px);transition:opacity .18s,background .18s,transform .18s; }
-    .ghost:hover,.ghost:focus-visible,.ghost[aria-expanded="true"] { opacity:1;background:rgba(37,55,75,.96); }
-    .menu-toggle { display:grid;place-items:center;width:50px;height:50px;font-size:1.55rem; }
-    .rail { position:fixed;top:50%;right:max(14px,env(safe-area-inset-right));transform:translateY(-50%);z-index:4;display:flex;flex-direction:column;gap:12px; }
-    .rail button { display:grid;place-items:center;width:52px;height:52px;font-size:1.3rem; }
-    .rail button:disabled { opacity:.2;cursor:not-allowed; }
-    .rail button:not(:disabled):hover {transform:scale(1.06);}
-    .menu {position:fixed;right:max(14px,env(safe-area-inset-right));top:calc(max(14px,env(safe-area-inset-top)) + 60px);z-index:10;width:min(350px,calc(100vw - 28px));max-height:calc(100dvh - 92px);overflow-y:auto;background:#152233;border:1px solid #34485f;border-radius:20px;padding:22px;box-shadow:0 24px 90px #000a;}
-    .menu[hidden] {display:none;}
-    .menu h1 {font-size:1.22rem;margin:0 0 6px;}
-    .menu p {margin:0 0 20px;color:var(--muted);font-size:.85rem;line-height:1.5;}
-    .section-label {font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 10px;display:block;}
-    .presets {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
-    .menu button.action,.menu input {background:#213248;color:var(--text);border:1px solid #3b5069;border-radius:10px;padding:11px;min-height:43px;}
-    .menu button.action:hover,.menu button.action[aria-pressed="true"] {background:#346351;color:#fff;border-color:#74c6a6;}
-    .custom { display:flex;gap:8px; }
-    .custom input {width:100%;min-width:0;}
-    .custom button {white-space:nowrap;}
-    .option {display:flex;align-items:center;gap:10px;font-size:.92rem;margin:18px 0;}
-    .option input {accent-color:var(--accent);width:18px;height:18px;}
-    .menu .full {width:100%;}
-    .menu a {color:var(--accent);}
-    .fine {font-size:.76rem!important;margin:15px 0 0!important;}
-    .message {position:fixed;bottom:max(18px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);font-size:clamp(.75rem,1.4vw,.9rem);color:#b5c5d6;text-align:center;pointer-events:none;opacity:0;transition:opacity .25s;white-space:nowrap;}
-    .message.visible {opacity:.8;}
-    /* The digital clock is the only prominent element; controls stay translucent until pointed at. */
-    @media (hover:hover) and (pointer:fine) {
-      body:fullscreen:not(:has(.menu:not([hidden]))) .corner,
-      body:fullscreen:not(:has(.menu:not([hidden]))) .rail {opacity:.06;transition:opacity .2s;}
-      body:fullscreen .corner:hover,body:fullscreen .corner:focus-within,
-      body:fullscreen .rail:hover,body:fullscreen .rail:focus-within {opacity:1;}
+    :root {
+      color-scheme: dark;
+      --bg: #080b12;
+      --panel: #111827;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #8be6bb;
+      --border: rgba(255,255,255,.11);
     }
-    @media(max-width:640px){.time{font-size:clamp(4rem,21vw,12rem)}.time.long{font-size:clamp(2.6rem,14vw,8rem)}.rail{right:10px;gap:9px}.rail button{width:40px;height:40px;font-size:1.05rem}.menu-toggle{width:42px;height:42px}.menu{top:65px}.ghost{opacity:.35}}
-    @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      pointer-events: none;
+    }
+
+    .icon-btn {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.045);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      opacity: .6;
+      transition: opacity .2s, background .2s;
+      pointer-events: auto;
+    }
+
+    .icon-btn:hover,
+    .icon-btn:focus-visible {
+      opacity: 1;
+      background: rgba(255,255,255,.12);
+    }
+
+    .icon-btn svg {
+      width: 23px;
+      height: 23px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .timer-screen {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .timer {
+      font-size: clamp(90px, 22vw, 360px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.065em;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      user-select: none;
+      text-align: center;
+      transition: color .3s;
+    }
+
+    .timer.finished {
+      color: var(--accent);
+    }
+
+    .side-controls {
+      position: fixed;
+      z-index: 10;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      opacity: .6;
+      transition: opacity .2s;
+    }
+
+    .side-controls:hover,
+    .side-controls:focus-within {
+      opacity: 1;
+    }
+
+    .control-btn {
+      height: 48px;
+      width: 48px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      transition: background .2s, transform .2s;
+    }
+
+    .control-btn:hover {
+      background: rgba(139,230,187,.18);
+      transform: scale(1.08);
+    }
+
+    .control-btn svg {
+      width: 21px;
+      height: 21px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .menu-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 29;
+      background: rgba(0,0,0,.55);
+      opacity: 0;
+      visibility: hidden;
+      transition: .25s;
+    }
+
+    .menu-backdrop.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .menu-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(340px, 88vw);
+      z-index: 30;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      padding: 26px 22px;
+      transform: translateX(-100%);
+      transition: transform .25s ease;
+      overflow-y: auto;
+    }
+
+    .menu-panel.open {
+      transform: translateX(0);
+    }
+
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 34px;
+    }
+
+    .menu-header h2 {
+      font-size: 21px;
+    }
+
+    .close-btn {
+      background: transparent;
+      color: var(--text);
+      border: 0;
+      font-size: 28px;
+      padding: 4px 10px;
+    }
+
+    .section-label {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .presets {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .preset {
+      padding: 13px 8px;
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .preset.active {
+      background: var(--accent);
+      color: #092116;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .custom-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .custom-row input {
+      min-width: 0;
+      width: 100%;
+      padding: 13px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: white;
+      outline: none;
+    }
+
+    .apply-btn {
+      padding: 0 17px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #092116;
+      font-weight: 700;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .setting-row input {
+      width: 19px;
+      height: 19px;
+      accent-color: var(--accent);
+    }
+
+    .menu-footer {
+      margin-top: 42px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .menu-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 650px) {
+      .topbar {
+        padding: 14px;
+      }
+
+      .timer {
+        font-size: clamp(64px, 20vw, 140px);
+      }
+
+      .side-controls {
+        right: 50%;
+        top: auto;
+        bottom: 22px;
+        transform: translateX(50%);
+        flex-direction: row;
+      }
+
+      .control-btn {
+        width: 46px;
+        height: 46px;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <main class="stage" id="stage" aria-label="Fullscreen study focus timer">
-    <div class="time" id="clock" role="timer" aria-label="Time remaining">25:00</div>
-    <div class="message" id="message" role="status" aria-live="polite"></div>
+
+  <!-- Top navigation -->
+  <header class="topbar">
+    <button class="icon-btn" id="menuButton"
+      aria-label="Open settings" aria-controls="menuPanel"
+      aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+
+    <button class="icon-btn" id="fullscreenButton"
+      aria-label="Enter fullscreen">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3"/>
+        <path d="M16 3h3a2 2 0 0 1 2 2v3"/>
+        <path d="M21 16v3a2 2 0 0 1-2 2h-3"/>
+        <path d="M8 21H5a2 2 0 0 1-2-2v-3"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Main timer -->
+  <main class="timer-screen">
+    <h1 class="timer" id="timerDisplay"
+      role="timer" aria-label="Time remaining">25:00</h1>
+    <span class="sr-only" id="timerStatus"
+      role="status" aria-live="polite"></span>
   </main>
-  <div class="corner"><button id="menuToggle" class="ghost menu-toggle" type="button" aria-label="Open settings menu" aria-controls="menu" aria-expanded="false" title="Settings (M)">☰</button></div>
-  <aside class="rail" aria-label="Timer controls">
-    <button id="startPause" type="button" class="ghost" title="Start or pause (Space)" aria-label="Start timer">▶</button>
-    <button id="reset" type="button" class="ghost" title="Reset (R)" aria-label="Reset timer">↺</button>
-  </aside>
-  <section class="menu" id="menu" hidden aria-label="Timer settings">
-    <h1>Study Focus Timer</h1>
-    <p>A distraction-free clock for students.</p>
-    <span class="section-label">Quick sessions</span>
-    <div class="presets">
-      <button class="action" data-minutes="5" aria-pressed="false">5 min Break</button>
-      <button class="action" data-minutes="25" aria-pressed="true">25 min Focus</button>
-      <button class="action" data-minutes="45" aria-pressed="false">45 min Study</button>
-      <button class="action" data-minutes="60" aria-pressed="false">60 min Study</button>
+
+  <!-- Side controls -->
+  <div class="side-controls">
+
+    <button class="control-btn" id="startButton"
+      aria-label="Start timer" title="Start / Pause">
+      <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m8 5 11 7-11 7z"/>
+      </svg>
+    </button>
+
+    <button class="control-btn" id="resetButton"
+      aria-label="Reset timer" title="Reset">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 11a9 9 0 1 1 2.5 6.3"/>
+        <path d="M3 4v7h7"/>
+      </svg>
+    </button>
+
+  </div>
+
+  <!-- Settings menu -->
+  <div class="menu-backdrop" id="menuBackdrop"></div>
+
+  <aside class="menu-panel" id="menuPanel"
+    aria-label="Timer settings" aria-hidden="true">
+
+    <div class="menu-header">
+      <h2>Study Focus</h2>
+      <button class="close-btn" id="closeMenu"
+        aria-label="Close settings">&times;</button>
     </div>
-    <label class="section-label" for="customMinutes">Custom duration (minutes)</label>
-    <div class="custom"><input id="customMinutes" type="number" inputmode="numeric" min="1" max="999" step="1" value="30"><button class="action" type="button" id="setCustom">Set</button></div>
-    <label class="option"><input id="sound" type="checkbox" checked> Play alarm when finished</label>
-    <button type="button" class="action full" id="fullscreen">Enter fullscreen</button>
-    <p class="fine">Keyboard: Space = start/pause · R = reset · F = fullscreen · M = menu</p>
-    <p class="fine">Made for students by <a href="https://biharkalyan.in" target="_blank" rel="noopener noreferrer">BiharKalyan.in</a></p>
-    <p class="fine">Keep this page open. Background tabs, device sleep and some mobile browsers may delay the alarm.</p>
-  </section>
+
+    <p class="section-label">Study Duration</p>
+
+    <div class="presets">
+      <button class="preset active" data-minutes="25">25 Minutes</button>
+      <button class="preset" data-minutes="45">45 Minutes</button>
+      <button class="preset" data-minutes="60">60 Minutes</button>
+      <button class="preset" data-minutes="5">5 Min Break</button>
+    </div>
+
+    <p class="section-label">Custom Timer</p>
+
+    <div class="custom-row">
+      <input id="customMinutes" type="number"
+        min="1" max="999" placeholder="Minutes"
+        aria-label="Custom duration in minutes">
+      <button class="apply-btn" id="applyCustom">Set</button>
+    </div>
+
+    <p class="section-label">Preferences</p>
+
+    <label class="setting-row">
+      <span>Play alarm when finished</span>
+      <input type="checkbox" id="alarmToggle" checked>
+    </label>
+
+    <div class="menu-footer">
+      Made for focused learning.<br><br>
+      Developed by
+      <a href="https://biharkalyan.in"
+        target="_blank" rel="noopener noreferrer">
+        BiharKalyan.in
+      </a>
+    </div>
+
+  </aside>
+
   <script>
-  (() => {
-    'use strict';
-    const $ = id => document.getElementById(id);
-    const clock = $('clock'), message = $('message'), menu = $('menu'), toggle = $('menuToggle');
-    const startPause = $('startPause'), fullscreen = $('fullscreen'), sound = $('sound');
-    const presets = [...document.querySelectorAll('[data-minutes]')];
-    let total = 25 * 60, remaining = total, deadline = 0, running = false, ticker = null, audio = null;
-    let noticeTimeout = null;
-    try { sound.checked = localStorage.getItem('study-focus-sound') !== 'false'; } catch (_) {}
-    function format(sec) {
-      const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
-      const part = n => String(n).padStart(2,'0');
-      return h ? `${part(h)}:${part(m)}:${part(s)}` : `${part(m)}:${part(s)}`;
+    "use strict";
+
+    const timerDisplay = document.getElementById("timerDisplay");
+    const timerStatus = document.getElementById("timerStatus");
+    const startButton = document.getElementById("startButton");
+    const resetButton = document.getElementById("resetButton");
+    const playIcon = document.getElementById("playIcon");
+
+    const menuButton = document.getElementById("menuButton");
+    const closeMenuButton = document.getElementById("closeMenu");
+    const menuPanel = document.getElementById("menuPanel");
+    const menuBackdrop = document.getElementById("menuBackdrop");
+
+    const fullscreenButton = document.getElementById("fullscreenButton");
+    const customMinutes = document.getElementById("customMinutes");
+    const applyCustom = document.getElementById("applyCustom");
+    const alarmToggle = document.getElementById("alarmToggle");
+    const presets = document.querySelectorAll(".preset");
+
+    let selectedSeconds = 25 * 60;
+    let remainingSeconds = selectedSeconds;
+    let running = false;
+    let endTime = 0;
+    let intervalId = null;
+    let audioContext = null;
+
+    const playSVG = '<path d="m8 5 11 7-11 7z"/>';
+    const pauseSVG =
+      '<path d="M8 5v14M16 5v14"/>';
+
+    function formatTime(seconds) {
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+
+      return String(minutes).padStart(2, "0") +
+        ":" + String(secs).padStart(2, "0");
     }
-    function render() {
-      const t = format(remaining);
-      clock.textContent = t; clock.classList.toggle('long',t.length > 5); clock.classList.toggle('finished',remaining === 0);
-      document.title = `${t} | Study Focus Timer`;
-      startPause.textContent = running ? 'Ⅱ' : '▶';
-      startPause.setAttribute('aria-label',running ? 'Pause timer' : 'Start timer');
-      startPause.title = running ? 'Pause (Space)' : 'Start (Space)';
+
+    function updateDisplay() {
+      timerDisplay.textContent = formatTime(remainingSeconds);
+      document.title = formatTime(remainingSeconds) +
+        " | Study Focus Timer";
     }
-    function notice(text) {
-      message.textContent = text; message.classList.add('visible');
-      if (noticeTimeout) clearTimeout(noticeTimeout);
-      noticeTimeout = setTimeout(()=>message.classList.remove('visible'),2600);
+
+    function updateControls() {
+      playIcon.innerHTML = running ? pauseSVG : playSVG;
+      startButton.setAttribute(
+        "aria-label", running ? "Pause timer" : "Start timer"
+      );
+      startButton.title = running ? "Pause" : "Start";
     }
+
+    function clearTimer() {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+
+      running = false;
+      updateControls();
+    }
+
     function prepareAudio() {
-      if (!sound.checked) return;
-      try { const C = window.AudioContext || window.webkitAudioContext; if (C) { audio ||= new C(); if (audio.state === 'suspended') audio.resume().catch(()=>{}); } } catch (_) {}
-    }
-    function alarm() {
-      if (!sound.checked || !audio) return;
+      if (!alarmToggle.checked) return;
+
       try {
-        const start = audio.currentTime + .03;
-        for (let i=0;i<4;i++) {
-          const osc=audio.createOscillator(), gain=audio.createGain(), at=start+i*.4;
-          osc.type='sine';osc.frequency.value=i%2?780:990;
-          gain.gain.setValueAtTime(.0001,at);gain.gain.exponentialRampToValueAtTime(.18,at+.025);gain.gain.exponentialRampToValueAtTime(.0001,at+.32);
-          osc.connect(gain);gain.connect(audio.destination);osc.start(at);osc.stop(at+.34);
+        const AudioContextClass =
+          window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioContextClass) return;
+
+        if (!audioContext) {
+          audioContext = new AudioContextClass();
         }
-      } catch (_) { notice('Session finished. Audio is unavailable.'); }
+
+        if (audioContext.state === "suspended") {
+          audioContext.resume().catch(() => {});
+        }
+      } catch (error) {
+        console.warn("Audio unavailable:", error);
+      }
     }
-    function clearTicker(){ if(ticker!==null)clearInterval(ticker);ticker=null;running=false; }
+
+    function playAlarm() {
+      if (!alarmToggle.checked || !audioContext) return;
+
+      try {
+        const now = audioContext.currentTime;
+
+        for (let i = 0; i < 3; i++) {
+          const oscillator = audioContext.createOscillator();
+          const gain = audioContext.createGain();
+
+          oscillator.type = "sine";
+          oscillator.frequency.value = 880;
+
+          oscillator.connect(gain);
+          gain.connect(audioContext.destination);
+
+          const start = now + i * 0.45;
+          gain.gain.setValueAtTime(0, start);
+          gain.gain.linearRampToValueAtTime(0.22, start + 0.03);
+          gain.gain.exponentialRampToValueAtTime(
+            0.001, start + 0.30
+          );
+
+          oscillator.start(start);
+          oscillator.stop(start + 0.32);
+        }
+      } catch (error) {
+        console.warn("Alarm could not play:", error);
+      }
+    }
+
+    function finishTimer() {
+      clearTimer();
+
+      remainingSeconds = 0;
+      updateDisplay();
+
+      timerDisplay.classList.add("finished");
+      timerStatus.textContent = "Study session completed.";
+
+      playAlarm();
+    }
+
     function tick() {
-      if(!running)return;
-      remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));render();
-      if(remaining===0){clearTicker();render();notice('Session complete!');alarm();}
+      if (!running) return;
+
+      remainingSeconds = Math.max(
+        0,
+        Math.ceil((endTime - Date.now()) / 1000)
+      );
+
+      updateDisplay();
+
+      if (remainingSeconds === 0) {
+        finishTimer();
+      }
     }
-    function playPause() {
-      if(running){tick();if(running){clearTicker();render();notice('Paused');}return;}
-      if(remaining===0)remaining=total;
-      prepareAudio();deadline=Date.now()+remaining*1000;running=true;
-      ticker=setInterval(tick,200);render();notice('Focus session started');
+
+    function startTimer() {
+      if (running) return;
+
+      if (remainingSeconds === 0) {
+        remainingSeconds = selectedSeconds;
+      }
+
+      prepareAudio();
+
+      timerDisplay.classList.remove("finished");
+      timerStatus.textContent = "Study session started.";
+
+      endTime = Date.now() + remainingSeconds * 1000;
+      running = true;
+
+      updateControls();
+      tick();
+
+      intervalId = setInterval(tick, 200);
     }
-    function reset(){clearTicker();remaining=total;render();notice('Timer reset');}
-    function choose(minutes,button){clearTicker();total=minutes*60;remaining=total;presets.forEach(b=>b.setAttribute('aria-pressed',String(b===button)));render();notice(`${minutes}-minute timer ready`);setMenu(false);}
-    function setMenu(open){menu.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close settings menu':'Open settings menu');toggle.textContent=open?'×':'☰';}
-    function setCustom(){const value=Number($('customMinutes').value);if(!Number.isInteger(value)||value<1||value>999){notice('Enter 1–999 minutes');$('customMinutes').focus();return;}choose(value,null);}
-    async function toggleFullscreen(){try{if(document.fullscreenElement){await document.exitFullscreen();}else if(document.documentElement.requestFullscreen){await document.documentElement.requestFullscreen();setMenu(false);}else{notice('Fullscreen is not supported in this browser.');}}catch(_){notice('Fullscreen was blocked by your browser.');}updateFullscreen();}
-    function updateFullscreen(){fullscreen.textContent=document.fullscreenElement?'Exit fullscreen':'Enter fullscreen';}
-    startPause.addEventListener('click',playPause);
-    $('reset').addEventListener('click',reset);
-    toggle.addEventListener('click',()=>setMenu(menu.hidden));
-    $('setCustom').addEventListener('click',setCustom);
-    $('customMinutes').addEventListener('keydown',e=>{if(e.key==='Enter')setCustom();});
-    presets.forEach(b=>b.addEventListener('click',()=>choose(Number(b.dataset.minutes),b)));
-    sound.addEventListener('change',()=>{try{localStorage.setItem('study-focus-sound',String(sound.checked));}catch(_){}if(sound.checked)prepareAudio();});
-    fullscreen.addEventListener('click',toggleFullscreen);
-    document.addEventListener('fullscreenchange',updateFullscreen);
-    document.addEventListener('pointerdown',e=>{if(!menu.hidden && !menu.contains(e.target) && !toggle.contains(e.target))setMenu(false);});
-    document.addEventListener('keydown',e=>{
-      if(e.key==='Escape' && !menu.hidden){setMenu(false);return;}
-      const editable=e.target instanceof HTMLElement && (e.target.matches('input,textarea,select')||e.target.isContentEditable);
-      if(editable||e.altKey||e.ctrlKey||e.metaKey)return;
-      if(e.code==='Space'){e.preventDefault();playPause();}
-      else if(e.key.toLowerCase()==='r'){reset();}
-      else if(e.key.toLowerCase()==='f'){toggleFullscreen();}
-      else if(e.key.toLowerCase()==='m'){setMenu(menu.hidden);}
+
+    function pauseTimer() {
+      if (!running) return;
+
+      tick();
+      clearTimer();
+      timerStatus.textContent = "Study session paused.";
+    }
+
+    function resetTimer() {
+      clearTimer();
+
+      remainingSeconds = selectedSeconds;
+      timerDisplay.classList.remove("finished");
+
+      updateDisplay();
+      timerStatus.textContent = "Timer reset.";
+    }
+
+    function setDuration(minutes) {
+      if (!Number.isInteger(minutes) ||
+          minutes < 1 || minutes > 999) {
+        return;
+      }
+
+      selectedSeconds = minutes * 60;
+      resetTimer();
+
+      presets.forEach(button => {
+        button.classList.toggle(
+          "active", Number(button.dataset.minutes) === minutes
+        );
+      });
+
+      closeSettings();
+    }
+
+    startButton.addEventListener("click", () => {
+      running ? pauseTimer() : startTimer();
     });
-    document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick();});
-    render();
-  })();
+
+    resetButton.addEventListener("click", resetTimer);
+
+    presets.forEach(button => {
+      button.addEventListener("click", () => {
+        setDuration(Number(button.dataset.minutes));
+      });
+    });
+
+    applyCustom.addEventListener("click", () => {
+      const minutes = Number(customMinutes.value);
+
+      if (!Number.isInteger(minutes) ||
+          minutes < 1 || minutes > 999) {
+        customMinutes.setCustomValidity(
+          "Enter a whole number between 1 and 999."
+        );
+        customMinutes.reportValidity();
+        return;
+      }
+
+      setDuration(minutes);
+    });
+
+    customMinutes.addEventListener("input", () => {
+      customMinutes.setCustomValidity("");
+    });
+
+    customMinutes.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        applyCustom.click();
+      }
+    });
+
+    function openSettings() {
+      menuPanel.classList.add("open");
+      menuBackdrop.classList.add("show");
+      menuPanel.setAttribute("aria-hidden", "false");
+      menuButton.setAttribute("aria-expanded", "true");
+      closeMenuButton.focus();
+    }
+
+    function closeSettings() {
+      const wasOpen = menuPanel.classList.contains("open");
+
+      if (wasOpen && menuPanel.contains(document.activeElement)) {
+        menuButton.focus();
+      }
+
+      menuPanel.classList.remove("open");
+      menuBackdrop.classList.remove("show");
+      menuPanel.setAttribute("aria-hidden", "true");
+      menuButton.setAttribute("aria-expanded", "false");
+    }
+
+    menuButton.addEventListener("click", openSettings);
+    closeMenuButton.addEventListener("click", closeSettings);
+    menuBackdrop.addEventListener("click", closeSettings);
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeSettings();
+      }
+    });
+
+    fullscreenButton.addEventListener("click", async () => {
+      try {
+        if (!document.fullscreenElement) {
+          if (!document.documentElement.requestFullscreen) {
+            return;
+          }
+
+          await document.documentElement.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch (error) {
+        console.warn("Fullscreen unavailable:", error);
+      }
+    });
+
+    document.addEventListener("fullscreenchange", () => {
+      const isFullscreen = Boolean(document.fullscreenElement);
+
+      fullscreenButton.setAttribute(
+        "aria-label",
+        isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+      );
+
+      fullscreenButton.title =
+        isFullscreen ? "Exit fullscreen" : "Enter fullscreen";
+    });
+
+    // Recalculate the timer when returning to the tab.
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) tick();
+    });
+
+    updateDisplay();
+    updateControls();
   </script>
+
 </body>
 </html>
