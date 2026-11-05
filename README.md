@@ -1,6 +1,6 @@
 # Study Focus Timer
 
-A minimal, distraction-free study timer for students, created for [BiharKalyan.in](https://biharkalyan.in).
+A minimal, distraction-free study timer for students, created by Arnav Giri.
 
 ## Features
 
@@ -32,4 +32,4 @@ Fullscreen requires a user gesture and is not supported by every mobile browser.
 
 ## Attribution
 
-Created for students by [BiharKalyan.in](https://biharkalyan.in).
+Created for students by Arnav Giri.
