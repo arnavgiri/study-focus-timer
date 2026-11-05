@@ -9,7 +9,7 @@
   <link rel="icon" type="image/webp" href="./favicon.webp?v=4">
   <title>Study Focus Timer | BiharKalyan.in</title>
 
-  <link rel="stylesheet" href="./styles.css?v=28a4881d920e">
+  <link rel="stylesheet" href="./styles.css?v=64aabd341e2e">
 </head>
 
 <body data-theme="dark">
@@ -439,7 +439,10 @@
     function makeFace(value) {
       const face = document.createElement("span");
       face.className = "reel-face";
-      face.textContent = value;
+      const glyph = document.createElement("span");
+      glyph.className = "reel-glyph";
+      glyph.textContent = value;
+      face.appendChild(glyph);
       return face;
     }
 
