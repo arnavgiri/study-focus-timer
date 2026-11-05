@@ -369,6 +369,14 @@
       line-height: 1;
     }
 
+    /* Center the visible glyph, not the font's asymmetric line box.
+       The same offset applies to both reel faces, including while rolling. */
+    .reel-glyph {
+      display: block;
+      line-height: 1;
+      transform: translateY(.04em);
+    }
+
     /*
       Initial position:
       [ New number ] - above the window
